@@ -1,10 +1,12 @@
 package com.wisdom;
 
+import java.io.Serializable;
+
 /**
  * Created by praji on 2/22/2018.
  */
 
-public class FeedItem {
+public class FeedItem implements Serializable{
     private String articleHeading;
     private String actualUrl;
     private String imageUrl;

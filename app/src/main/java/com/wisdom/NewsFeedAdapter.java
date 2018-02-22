@@ -60,7 +60,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
                 getContext().startActivity(Intent.createChooser(sendIntent, "Share article with"));
             }
         });
-     //   mActualUrl.setText(feedItem.getactualUrl());
+        mActualUrl.setText(feedItem.getShortContent());
 
         return view;
     }

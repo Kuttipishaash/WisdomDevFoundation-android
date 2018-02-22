@@ -1,5 +1,6 @@
 package com.wisdom;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -58,7 +59,9 @@ public class NewsFeedActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FeedItem item = mFeedAdapter.getItemClicked(position);
 
-
+                Intent intent = new Intent(NewsFeedActivity.this, ViewNewsActivity.class);
+                intent.putExtra("downloadUrl", item.getActualUrl());
+                startActivity(intent);
                 /*
                 CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                 CustomTabsIntent intent = builder.build();
@@ -73,7 +76,6 @@ public class NewsFeedActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(NewsFeedActivity.this, "Load start", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.VISIBLE);
         }
 
@@ -83,7 +85,6 @@ public class NewsFeedActivity extends AppCompatActivity {
 
             progressBar.setVisibility(View.GONE);
             mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feedItems);
-            Toast.makeText(NewsFeedActivity.this, "Load end", Toast.LENGTH_SHORT).show();
             mFeedList.setAdapter(mFeedAdapter);
         }
 
@@ -113,7 +114,7 @@ public class NewsFeedActivity extends AppCompatActivity {
 
                 Elements contents = doc.getElementsByClass("entry-content");
                 for (Element content : contents) {
-                    sampleContents.add(content.text().substring(0, 100));
+                    sampleContents.add(content.text().substring(0, 130));
                 }
 
                 for (int i = 0; i < 7; i++) {

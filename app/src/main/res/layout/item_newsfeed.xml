@@ -36,7 +36,10 @@
             android:layout_height="wrap_content"
             android:text="Download URL"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_headline" />
+            app:layout_constraintTop_toBottomOf="@+id/text_headline"
+            android:maxLines="2"
+            android:maxLength="100"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 
