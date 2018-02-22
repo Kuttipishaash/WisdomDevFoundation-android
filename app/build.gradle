@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -45,5 +48,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
     compile 'com.android.support:customtabs:26.1.0'
+    compile 'com.heinrichreimersoftware:material-intro:1.6.2'
 }
 apply plugin: 'com.google.gms.google-services'
