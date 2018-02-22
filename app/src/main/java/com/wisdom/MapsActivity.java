@@ -1,6 +1,7 @@
 package com.wisdom;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,6 +17,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -34,8 +37,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import it.sephiroth.android.library.floatingmenu.FloatingActionItem;
 
 import static android.content.ContentValues.TAG;
 import static android.widget.Toast.LENGTH_LONG;
@@ -49,27 +54,207 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     Location cur_location=null;
+    ArrayList<Institution> toilets=new ArrayList<Institution>();
+    ArrayList<Institution> garbage=new ArrayList<Institution>();
+    ArrayList<Institution> healthcare=new ArrayList<Institution>();
 
     Marker my_marker=null;
+    Institution one,two,three;
     GoogleMap mMap=null,statmMap;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         locationListenSet();
+        final SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);
+        progressBar.setMessage("Retrieving location");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setProgress(0);
+        progressBar.setMax(100);
+        progressBar.show();
+        new Thread(new Runnable() {
+            public void run() {
+                while (locpref.getString("lat","").equals(""));
+                progressBar.dismiss();
+            }
+        }).start();
+
+
     }
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
         statmMap = mMap;
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getTitle().equals("Toilet"))
+                {
+
+                }
+                else if(marker.getTitle().equals("Garbage"))
+                {
+
+                }
+                else if(marker.getTitle().equals("Trash"))
+                {
+
+                }
+                return false;
+            }
+        });
     }
     void retrieveTheNearServices()
     {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("");
+        final DatabaseReference myRef = database.getReference("");
+        /////Toilet data
         myRef.child("Toilet").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                one.num="1";
+                two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                two.num="2";
+                three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                three.num="3";
+                for(DataSnapshot ds:dataSnapshot.getChildren())
+                    {
+                        if(distance(three.loc.latitude,three.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                        {
+                            if(distance(two.loc.latitude,two.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                    distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                            {
+                                if(distance(one.loc.latitude,one.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                        distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                {
+                                    one.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                    one.num=ds.child("id_no").getValue().toString();
+                                }
+                                else
+                                {
+                                    two.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                    two.num=ds.child("id_no").getValue().toString();
+                                }
+                            }
+                            else
+                            {
+                                three.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                three.num=ds.child("id_no").getValue().toString();
+                            }
+                        }
+                    }
+                    toilets=new ArrayList<Institution>();
+                    toilets.add(one);
+                    toilets.add(two);
+                    toilets.add(three);
+
+                ////Trash data
+                myRef.child("Trash").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                        one.num="1";
+                        two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                        two.num="2";
+                        three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                        three.num="3";
+                        for(DataSnapshot ds:dataSnapshot.getChildren())
+                        {
+                            if(distance(three.loc.latitude,three.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                    distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                            {
+                                if(distance(two.loc.latitude,two.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                        distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                {
+                                    if(distance(one.loc.latitude,one.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                            distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                    {
+                                        one.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                        one.num=ds.child("id_no").getValue().toString();
+                                    }
+                                    else
+                                    {
+                                        two.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                        two.num=ds.child("id_no").getValue().toString();
+                                    }
+                                }
+                                else
+                                {
+                                    three.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                    three.num=ds.child("id_no").getValue().toString();
+                                }
+                            }
+                        }
+                        garbage=new ArrayList<Institution>();
+                        garbage.add(one);
+                        garbage.add(two);
+                        garbage.add(three);
+
+                        /////Health care data
+                        myRef.child("Healthcare").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                                one.num="1";
+                                two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                                two.num="2";
+                                three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                                three.num="3";
+                                for(DataSnapshot ds:dataSnapshot.getChildren())
+                                {
+                                    if(distance(three.loc.latitude,three.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                            distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                    {
+                                        if(distance(two.loc.latitude,two.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                                distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                        {
+                                            if(distance(one.loc.latitude,one.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
+                                                    distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                            {
+                                                one.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                                one.num=ds.child("id_no").getValue().toString();
+                                            }
+                                            else
+                                            {
+                                                two.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                                two.num=ds.child("id_no").getValue().toString();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            three.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                            three.num=ds.child("id_no").getValue().toString();
+                                        }
+                                    }
+                                }
+                                toilets=new ArrayList<Institution>();
+                                toilets.add(one);
+                                toilets.add(two);
+                                toilets.add(three);
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.w(TAG, "Failed to read value.", error.toException());
+                            }
+                        });
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        Log.w(TAG, "Failed to read value.", error.toException());
+                    }
+                });
+
 
             }
 
@@ -80,12 +265,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+    }
+    void setInstiMarker()
+    {
+        int i=0;
+        for(i=0;i<toilets.size();++i)
+        {
+            View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
+            ImageView rdp = (CircleImageView) mrker.findViewById(R.id.insti_dp);
+            rdp.setImageResource(R.drawable.toilet);
+            LatLng ll = toilets.get(i).loc;
+            MarkerOptions options = new MarkerOptions().title("Toilet").snippet(toilets.get(i).num).position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
+            mMap.addMarker(options);
 
+            ////////////
+            rdp.setImageResource(R.drawable.trash);
+            ll = garbage.get(i).loc;
+            options = new MarkerOptions().title("Garbage").snippet(garbage.get(i).num).position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
+            mMap.addMarker(options);
+
+            /////////////
+            rdp.setImageResource(R.drawable.healthcare);
+            ll = healthcare.get(i).loc;
+            options = new MarkerOptions().title("Healthcare").snippet(healthcare.get(i).num).position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
+            mMap.addMarker(options);
+        }
     }
 
        void setMyMarker(final Location loc)
        {
-
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
             final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
@@ -106,8 +314,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             editloc.putString("lat",loc.getLatitude()+"");
             editloc.putString("lng",loc.getLongitude()+"");
             editloc.commit();
-
-        }
+       }
     public Bitmap createDrawableFromView(Context context, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -121,6 +328,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         view.draw(canvas);
 
         return bitmap;
+    }
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1))
+                * Math.sin(deg2rad(lat2))
+                + Math.cos(deg2rad(lat1))
+                * Math.cos(deg2rad(lat2))
+                * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        return (dist);
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
     }
 
 
