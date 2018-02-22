@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/holo_blue_bright"
     android:orientation="vertical">
 
     <LinearLayout
@@ -14,16 +15,20 @@
             android:layout_width="187dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:background="@android:color/darker_gray"
+            android:background="@android:color/holo_blue_light"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
             android:text="TextView"
-            android:textSize="22sp" />
+            android:textSize="25sp" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/type"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:background="@color/common_google_signin_btn_text_dark_focused"
+            android:background="@color/fui_bgFacebook"
             android:text="TextView"
             android:textColor="@android:color/white"
             android:textSize="22sp" />
@@ -32,12 +37,25 @@
     <com.hsalf.smilerating.SmileRating
         android:id="@+id/smile_rating"
         android:layout_width="match_parent"
-        android:layout_height="75dp" />
+        android:layout_height="75dp"
+        android:clickable="true"
+        android:filterTouchesWhenObscured="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:orientation="horizontal"></LinearLayout>
+        android:layout_weight="0.04">
+
+        <LinearLayout
+            android:id="@+id/imgs"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:isScrollContainer="true"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal"></LinearLayout>
+    </HorizontalScrollView>
 
     <TextView
         android:layout_width="match_parent"
@@ -46,7 +64,18 @@
         android:textSize="20sp" />
 
     <ListView
+        android:id="@+id/comments"
         android:layout_width="match_parent"
-        android:layout_height="150dp" />
+        android:layout_height="150dp"
+        android:nestedScrollingEnabled="true">
+
+    </ListView>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Add a comment" />
 
 </LinearLayout>

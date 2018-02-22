@@ -19,15 +19,23 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="match_parent"
         tools:context="com.wisdom.MapsActivity" />
 
-    <android.support.design.widget.CoordinatorLayout
+    <RelativeLayout
         android:id="@+id/btm_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="343dp"
-        android:clipToPadding="true"
+        android:layout_width="405dp"
+        android:layout_height="351dp"
         android:visibility="visible"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-        tools:layout_editor_absoluteY="359dp">
+        tools:layout_editor_absoluteX="-21dp"
+        tools:layout_editor_absoluteY="265dp">
+
+        <include
+            android:id="@+id/btm_profile"
+            layout="@layout/btm_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="343dp">
+
+        </include>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
