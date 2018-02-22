@@ -1,15 +1,15 @@
 package com.wisdom;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 1;
 
-    private GoogleSignInClient mGoogleSignInClient;
-
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -30,9 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mFirebaseAuthStateListner;
 
-    private EditText mEmailField;
-    private EditText mPasswordField;
-    private Button mLoginButton;
+
     private ProgressBar mProgressBar;
 
 
@@ -40,14 +36,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initViews();
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference("/");
+
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 if (firebaseUser != null) {
-                    Toast.makeText(MainActivity.this, "Logged in as : " + firebaseUser.getDisplayName(), Toast.LENGTH_SHORT);
+                    String userID = firebaseUser.getUid();
+                    String userEmail = firebaseUser.getEmail();
+                    UserInfo user = new UserInfo(2, userEmail);
+                    mDatabaseReference.child("user_info/" + userID).setValue(user);
+                    Toast.makeText(MainActivity.this, "Logged in as : " + userEmail, Toast.LENGTH_SHORT).show();
+
                 } else {
                     startActivityForResult(
                             AuthUI.getInstance()
@@ -62,31 +66,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mFirebaseAuth.addAuthStateListener(mFirebaseAuthStateListner);
-
-        /*
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //mLoginButton.setVisibility(View.GONE);
-                //mProgressBar.setVisibility(View.VISIBLE);
-                mFirebaseAuth.signInWithEmailAndPassword(mEmailField.getText().toString(), mPasswordField.getText().toString())
-                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(MainActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
-                                    finish();
-                                } else {
-                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
-                                }
-                             //   mLoginButton.setVisibility(View.VISIBLE);
-                               // mProgressBar.setVisibility(View.GONE);
-                            }
-                        });
-            }
-        });
-*/
 
 
     }
@@ -103,10 +82,39 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth.addAuthStateListener(mFirebaseAuthStateListner);
     }
 
-    private void initViews() {
-        //mEmailField = (EditText) findViewById(R.id.et_email);
-        //mPasswordField = (EditText) findViewById(R.id.et_password);
-        //mLoginButton = (Button) findViewById(R.id.btn_login);
-    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
 
+            // Successfully signed in
+            if (resultCode == RESULT_OK) {
+
+                startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
+                Toast.makeText(MainActivity.this, "Signed in", Toast.LENGTH_SHORT).show();
+
+                finish();
+            } else {
+                // Sign in failed
+                if (response == null) {
+                    // User pressed back button
+                    Toast.makeText(MainActivity.this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    Toast.makeText(MainActivity.this, "No network", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    Toast.makeText(MainActivity.this, "Unknown Error", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+    }
 }
+
