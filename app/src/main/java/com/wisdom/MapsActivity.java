@@ -170,10 +170,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         for(DataSnapshot ds:dataSnapshot.getChildren())
                         {
                             if(distance(three.loc.latitude,three.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
-                                    distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                    distance(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()),cur_location.getLatitude(),cur_location.getLongitude()))
                             {
                                 if(distance(two.loc.latitude,two.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
-                                        distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                        distance(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
                                 {
                                     if(distance(one.loc.latitude,one.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
                                             distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
