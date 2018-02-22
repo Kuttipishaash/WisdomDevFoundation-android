@@ -1,11 +1,14 @@
 package com.wisdom;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -46,6 +49,16 @@ public class NewsFeedActivity extends AppCompatActivity {
         feedItems = new ArrayList<FeedItem>();
 
         progressBar = (ProgressBar) findViewById(R.id.prog_newsfeed);
+
+        mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FeedItem item = mFeedAdapter.getItemClicked(position);
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent intent = builder.build();
+                intent.launchUrl(NewsFeedActivity.this, Uri.parse(item.getActualUrl()));
+            }
+        });
         new JSoupLoaderTask().execute();
     }
 

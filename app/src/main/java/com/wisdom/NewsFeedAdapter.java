@@ -2,7 +2,10 @@ package com.wisdom;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -19,8 +22,12 @@ import java.util.List;
 
 public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
 
+    private List<FeedItem> feedItemsList;
+
     public NewsFeedAdapter(Context context, int resource, List<FeedItem> objects) {
         super(context,resource,objects);
+
+        feedItemsList = objects;
     }
 
     @Override
@@ -43,12 +50,22 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
             @Override
             public void onClick(View v) {
                 FeedItem clickedItem = new FeedItem();
-                clickedItem = getItem(position);
+                String shareContent;
 
+                clickedItem = getItem(position);
+                shareContent = "Check out this article: \n" + clickedItem.getActualUrl() + "\nShared from Wisdom Foundation";
+                Intent sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                sendIntent.setType("text/plain");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+                getContext().startActivity(Intent.createChooser(sendIntent, "Share article with"));
             }
         });
      //   mActualUrl.setText(feedItem.getactualUrl());
 
         return view;
+    }
+
+    public FeedItem getItemClicked(int position){
+        return feedItemsList.get(position);
     }
 }
