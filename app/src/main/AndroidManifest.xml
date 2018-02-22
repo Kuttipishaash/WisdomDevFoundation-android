@@ -16,13 +16,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <activity android:name=".MainActivity">
+        </activity>
+        <activity android:name=".NewsFeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".NewsFeedActivity">
         </activity>
     </application>
 
