@@ -76,11 +76,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         progressBar.show();
         new Thread(new Runnable() {
             public void run() {
-                while (locpref.getString("lat","").equals(""));
+                while (locpref.getString("lat","").equals("")&&cur_location==null);
                 progressBar.dismiss();
+                retrieveTheNearServices();
+                Log.d("firebase checking","yaa fine");
+
+
             }
         }).start();
-
 
     }
     @Override
@@ -114,35 +117,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myRef.child("Toilet").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                one=two=three=new Institution();
+                one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").getValue().toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").getValue().toString()));
                 one.num="1";
-                two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").getValue().toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").getValue().toString()));
                 two.num="2";
-                three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").getValue().toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").getValue().toString()));
                 three.num="3";
                 for(DataSnapshot ds:dataSnapshot.getChildren())
                     {
                         if(distance(three.loc.latitude,three.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
-                                distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                distance(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()),cur_location.getLatitude(),cur_location.getLongitude()))
                         {
                             if(distance(two.loc.latitude,two.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
-                                    distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                    distance(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()),cur_location.getLatitude(),cur_location.getLongitude()))
                             {
                                 if(distance(one.loc.latitude,one.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
-                                        distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
+                                        distance(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()),cur_location.getLatitude(),cur_location.getLongitude()))
                                 {
-                                    one.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                    one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
                                     one.num=ds.child("id_no").getValue().toString();
                                 }
                                 else
                                 {
-                                    two.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                    two.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
                                     two.num=ds.child("id_no").getValue().toString();
+
                                 }
                             }
                             else
                             {
-                                three.loc=new LatLng(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()));
+                                three.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
                                 three.num=ds.child("id_no").getValue().toString();
                             }
                         }
@@ -153,14 +158,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     toilets.add(three);
 
                 ////Trash data
-                myRef.child("Trash").addValueEventListener(new ValueEventListener() {
+                myRef.child("Garbage").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                        one.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").getValue().toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").getValue().toString()));
                         one.num="1";
-                        two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                        two.loc=new LatLng(Double.parseDouble(dataSnapshot.child("2").child("lat").getValue().toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").getValue().toString()));
                         two.num="2";
-                        three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("1").child("lat").toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
+                        three.loc=new LatLng(Double.parseDouble(dataSnapshot.child("3").child("lat").getValue().toString()),Double.parseDouble(dataSnapshot.child("1").child("lng").toString()));
                         three.num="3";
                         for(DataSnapshot ds:dataSnapshot.getChildren())
                         {
@@ -206,6 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 three.num="3";
                                 for(DataSnapshot ds:dataSnapshot.getChildren())
                                 {
+                                    Log.d("firebase checking",ds.child("lat").toString());
                                     if(distance(three.loc.latitude,three.loc.longitude,cur_location.getLatitude(),cur_location.getLongitude())>
                                             distance(Double.parseDouble(ds.child("lat").toString()),Double.parseDouble(ds.child("lng").toString()),cur_location.getLatitude(),cur_location.getLongitude()))
                                     {
@@ -235,7 +241,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 toilets.add(one);
                                 toilets.add(two);
                                 toilets.add(three);
-
+                                setInstiMarker();
                             }
 
                             @Override
@@ -290,6 +296,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             options = new MarkerOptions().title("Healthcare").snippet(healthcare.get(i).num).position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
             mMap.addMarker(options);
         }
+        Log.d("firebase checking","Markers are the set");
+
     }
 
        void setMyMarker(final Location loc)
