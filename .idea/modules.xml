@@ -4,8 +4,10 @@
     <modules>
       <module fileurl="file://E:\WisdomDevFoundation-android\Wisdom.iml" filepath="E:\WisdomDevFoundation-android\Wisdom.iml" />
       <module fileurl="file://$PROJECT_DIR$/WisdomDevFoundation-android.iml" filepath="$PROJECT_DIR$/WisdomDevFoundation-android.iml" />
+      <module fileurl="file://C:\Users\Anil S Nair\StudioProjects\WisdomDevFoundation-android\WisdomDevFoundation-android.iml" filepath="C:\Users\Anil S Nair\StudioProjects\WisdomDevFoundation-android\WisdomDevFoundation-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\praji\Desktop\Android\ZealHack\WisdomDevFoundation-android\app\app.iml" filepath="C:\Users\praji\Desktop\Android\ZealHack\WisdomDevFoundation-android\app\app.iml" />
+      <module fileurl="file://C:\Users\Anil S Nair\StudioProjects\WisdomDevFoundation-android\app\app.iml" filepath="C:\Users\Anil S Nair\StudioProjects\WisdomDevFoundation-android\app\app.iml" />
     </modules>
   </component>
 </project>
