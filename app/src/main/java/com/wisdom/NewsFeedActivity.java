@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.jsoup.Jsoup;
@@ -32,6 +34,8 @@ public class NewsFeedActivity extends AppCompatActivity {
     private ListView mFeedList;
     private NewsFeedAdapter mFeedAdapter;
 
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +45,7 @@ public class NewsFeedActivity extends AppCompatActivity {
         mFeedList = (ListView) findViewById(R.id.list_feed);
         feedItems = new ArrayList<FeedItem>();
 
+        progressBar = (ProgressBar) findViewById(R.id.prog_newsfeed);
         new JSoupLoaderTask().execute();
     }
 
@@ -49,12 +54,14 @@ public class NewsFeedActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             Toast.makeText(NewsFeedActivity.this, "Load start", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
+            progressBar.setVisibility(View.GONE);
             mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feedItems);
             Toast.makeText(NewsFeedActivity.this, "Load end", Toast.LENGTH_SHORT).show();
             mFeedList.setAdapter(mFeedAdapter);
