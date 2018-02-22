@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("main");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference("/");
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         if (!previouslyStarted) {
             mEditor.putBoolean("first_start", true);
             mEditor.apply();
-            startActivity(new Intent(MainActivity.this, IntroActivity.class));
+            //startActivity(new Intent(MainActivity.this, IntroActivity.class));
         }
 
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 if (firebaseUser != null) {
+                    startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
+
                     String userID = firebaseUser.getUid();
                     String userEmail = firebaseUser.getEmail();
                     UserInfo user = new UserInfo(2, userEmail);

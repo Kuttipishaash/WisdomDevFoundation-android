@@ -1,6 +1,7 @@
 package com.wisdom;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.heinrichreimersoftware.materialintro.slide.FragmentSlide;
 
@@ -10,6 +11,8 @@ public class IntroActivity extends com.heinrichreimersoftware.materialintro.app.
     protected void onCreate(Bundle savedInstanceState) {
         setFullscreen(true);
         super.onCreate(savedInstanceState);
+        setTitle("intros");
+        Toast.makeText(this, "prejith", Toast.LENGTH_SHORT).show();
 
         addSlide(new FragmentSlide.Builder()
                 .background(R.color.md_teal_500)

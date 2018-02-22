@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,6 +44,8 @@ public class NewsFeedActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
+
+        setTitle("News");
 
         disableSecurity();
         mFeedList = (ListView) findViewById(R.id.list_feed);
@@ -109,11 +112,11 @@ public class NewsFeedActivity extends AppCompatActivity {
                 }
 
                 Elements contents = doc.getElementsByClass("entry-content");
-                for(Element content : contents) {
+                for (Element content : contents) {
                     sampleContents.add(content.text().substring(0, 100));
                 }
 
-                for(int i = 0; i < 7; i++) {
+                for (int i = 0; i < 7; i++) {
                     feedItem = new FeedItem();
                     feedItem.setArticleHeading(headings.get(i));
                     feedItem.setActualUrl(actualUrls.get(i));
