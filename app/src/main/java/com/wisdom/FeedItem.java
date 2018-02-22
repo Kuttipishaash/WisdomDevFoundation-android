@@ -8,6 +8,15 @@ public class FeedItem {
     private String articleHeading;
     private String actualUrl;
     private String imageUrl;
+    private String shortContent;
+
+    public String getShortContent() {
+        return shortContent;
+    }
+
+    public void setShortContent(String shortContent) {
+        this.shortContent = shortContent;
+    }
 
     public String getActualUrl() {
         return actualUrl;

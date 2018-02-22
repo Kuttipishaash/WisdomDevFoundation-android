@@ -54,9 +54,13 @@ public class NewsFeedActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FeedItem item = mFeedAdapter.getItemClicked(position);
+
+
+                /*
                 CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                 CustomTabsIntent intent = builder.build();
                 intent.launchUrl(NewsFeedActivity.this, Uri.parse(item.getActualUrl()));
+                */
             }
         });
         new JSoupLoaderTask().execute();
@@ -87,11 +91,13 @@ public class NewsFeedActivity extends AppCompatActivity {
                 List<String> headings = new ArrayList<String>();
                 List<String> actualUrls = new ArrayList<String>();
                 List<String> imageUrls = new ArrayList<String>();
+                List<String> sampleContents = new ArrayList<String>();
 
-                FeedItem feedItem = new FeedItem();
+                FeedItem feedItem;
+
                 Document doc = Jsoup.connect("https://blog.udacity.com").get();
-                Elements articles = doc.select("article > header > h1 > a");
 
+                Elements articles = doc.select("article > header > h1 > a");
                 for (Element article : articles) {
                     headings.add(article.text());
                     actualUrls.add(article.attr("href"));
@@ -102,11 +108,17 @@ public class NewsFeedActivity extends AppCompatActivity {
                     imageUrls.add(image.attr("src"));
                 }
 
+                Elements contents = doc.getElementsByClass("entry-content");
+                for(Element content : contents) {
+                    sampleContents.add(content.text().substring(0, 100));
+                }
+
                 for(int i = 0; i < 7; i++) {
                     feedItem = new FeedItem();
                     feedItem.setArticleHeading(headings.get(i));
                     feedItem.setActualUrl(actualUrls.get(i));
                     feedItem.setImageUrl(imageUrls.get(i));
+                    feedItem.setShortContent(sampleContents.get(i));
                     feedItems.add(feedItem);
                 }
 
