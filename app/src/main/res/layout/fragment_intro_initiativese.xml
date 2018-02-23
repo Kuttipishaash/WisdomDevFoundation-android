@@ -7,7 +7,7 @@
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="50dp" />
+        android:layout_height="30dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
         android:gravity="center"
         android:paddingLeft="64dp"
         android:paddingRight="64dp"
-        android:text="hghjjhg"
+        android:text="Healthcare. Education. Environment Protection. Friendly Toilets"
         android:textColor="#ffffff"
         android:textSize="17sp" />
 
