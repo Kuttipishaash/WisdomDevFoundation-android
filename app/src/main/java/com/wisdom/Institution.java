@@ -11,10 +11,12 @@ import java.util.ArrayList;
 public class Institution {
     String num;
     LatLng loc;
-    String address,rating,type;
+    String address,type;
+    int rate;
     static class CommentsRating
     {
-        String name,comment,rating,dp;
+        String name,comment,dp;
+        int rate;
     }
     ArrayList<CommentsRating> cmmnts= new ArrayList<CommentsRating>();
 

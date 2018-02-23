@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -76,7 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     BottomSheetBehavior<View> mBottomSheetBehavior1;
-    Location cur_location=null;
+    String cur_typ;
+    LatLng cur_location=null;
     ArrayList<Institution> toilets=new ArrayList<Institution>();
     ArrayList<Institution> garbage=new ArrayList<Institution>();
     ArrayList<Institution> healthcare=new ArrayList<Institution>();
@@ -89,16 +91,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             "One of immemorable experience in my life","Want to visit again",
                             "Loved this place...",
                             "Worth visiting",
-                            "Great service.."};
+                            "Great service..",
+                            "Everyone should visit here once in life",
+                            "liked so much <3 <3"};
     String[] dp_name={"a","b","c","d","e","f","g"};
     Marker my_marker=null;
     Institution one,two,three;
+    CommentAdapter commentLister = null;
     GoogleMap mMap=null,statmMap;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        locationListenSet();
         final SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
         final ProgressDialog progressBar = new ProgressDialog(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -110,6 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         progressBar.setProgress(0);
         progressBar.setMax(100);
         progressBar.show();
+        cur_location=new LatLng(9.7433562,76.368284);
         new Thread(new Runnable() {
             public void run() {
                 while (locpref.getString("lat","").equals("")||cur_location==null);
@@ -119,12 +124,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }).start();
 
+        Button intnt_btn=(Button)findViewById(R.id.intnt_btn);
+        intnt_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MapsActivity.this,NewsFeedActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         Toast.makeText(this,"map ready",LENGTH_LONG).show();
         mMap = googleMap;
         statmMap = mMap;
+        setMyMarker(cur_location);
         bottomSheet = (View)findViewById(R.id.btm_sheet);
         final BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
         mBottomSheetBehavior1.setPeekHeight(0);
@@ -149,37 +165,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
+            public boolean onMarkerClick(final Marker marker) {
                 BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
                 mBottomSheetBehavior1.setPeekHeight(450);
-                View bottomSheet = findViewById(R.id.btm_sheet);
+                final View bottomSheet = findViewById(R.id.btm_sheet);
                 TextView address=(TextView)bottomSheet.findViewById(R.id.address_name);
                 address.setSelected(true);
                 TextView type=(TextView)bottomSheet.findViewById(R.id.type);
                 LinearLayout imgs=(LinearLayout)bottomSheet.findViewById(R.id.imgs);
                 SmileRating sr=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
+                sr.setClickable(false);
                 String imageName = "";
                 Button addcomnt=(Button)bottomSheet.findViewById(R.id.button2);
                 ListView comments=(ListView)bottomSheet.findViewById(R.id.comments);
-                CommentAdapter commentLister;
                 addcomnt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v)
                     {
-
+                            View btm_review=(View)findViewById(R.id.btm_review);
+                            btm_review.setVisibility(View.VISIBLE);
+                            View btm_sheet=(View)findViewById(R.id.btm_sheet);
+                            btm_sheet.setVisibility(View.INVISIBLE);
                     }
                 });
                 if(marker.getTitle().equals("Toilet"))
                 {
+                    cur_typ="T";
                     imageName="toilet";
                     address.setText(toilets.get(Integer.parseInt(marker.getSnippet())).address);
                     type.setText(marker.getTitle());
-                    sr=setRating(sr,toilets.get(Integer.parseInt(marker.getSnippet())).rating);
+                    sr.setSelectedSmile(healthcare.get(Integer.parseInt(marker.getSnippet())).rate);
                     for(int i=0;i<4;++i)
                     {
                         Institution.CommentsRating one=new Institution.CommentsRating();
                         one.name=person_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 7)];
+                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 10)];
                         one.dp=dp_name[ThreadLocalRandom.current().nextInt(0, 7)];
                         toilets.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
                     }
@@ -189,15 +209,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 else if(marker.getTitle().equals("Garbage"))
                 {
+                    cur_typ="G";
                     imageName="garbage";
                     address.setText(garbage.get(Integer.parseInt(marker.getSnippet())).address);
                     type.setText(marker.getTitle());
-                    sr=setRating(sr,garbage.get(Integer.parseInt(marker.getSnippet())).rating);
+                    sr.setSelectedSmile(healthcare.get(Integer.parseInt(marker.getSnippet())).rate);
                     for(int i=0;i<4;++i)
                     {
                         Institution.CommentsRating one=new Institution.CommentsRating();
                         one.name=person_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 7)];
+                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 10)];
                         one.dp=dp_name[ThreadLocalRandom.current().nextInt(0, 7)];
                         garbage.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
                     }
@@ -206,20 +227,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 else if(marker.getTitle().equals("Healthcare"))
                 {
-                    imageName="healthcare";
+                    cur_typ="H";
+                    imageName="healthclinic";
                     address.setText(healthcare.get(Integer.parseInt(marker.getSnippet())).address);
                     type.setText(marker.getTitle());
                     for(int i=0;i<4;++i)
                     {
                         Institution.CommentsRating one=new Institution.CommentsRating();
                         one.name=person_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 7)];
+                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 10)];
                         one.dp=dp_name[ThreadLocalRandom.current().nextInt(0, 7)];
                         healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
                     }
                     commentLister=new CommentAdapter(MapsActivity.this,healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts);
                     comments.setAdapter(commentLister);
-                    sr=setRating(sr,healthcare.get(Integer.parseInt(marker.getSnippet())).rating);
+                    sr.setSelectedSmile(healthcare.get(Integer.parseInt(marker.getSnippet())).rate);
                 }
 
                 for(int i=0;i<4;i++)
@@ -232,24 +254,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     image.setImageResource(resID );
                     imgs.addView(rView);
                 }
+
+                /////////////////////////////
+                Button setcomnt=(Button)bottomSheet.findViewById(R.id.frag_done);
+                setcomnt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText commnt=(EditText)bottomSheet.findViewById(R.id.editText2);
+                        SmileRating rating=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
+                        int rate=rating.getRating();
+                        String comment=commnt.getText().toString();
+                        Institution.CommentsRating one=new Institution.CommentsRating();
+                        one.rate=rate;
+                        one.comment=comment;
+                        if(cur_typ.equals("T"))
+                            toilets.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
+                        else if(cur_typ.equals("G"))
+                            garbage.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
+                        else if(cur_typ.equals("H"))
+                            healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
+                        commentLister.notifyDataSetChanged();
+                        View btm_review=(View)findViewById(R.id.btm_review);
+                        btm_review.setVisibility(View.INVISIBLE);
+                        View btm_sheet=(View)findViewById(R.id.btm_sheet);
+                        btm_sheet.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+
                 return false;
             }
         });
     }
-    SmileRating setRating(SmileRating sr,String rating)
-    {
-       if(rating.equals("TERRIBLE"))
-           sr.setSelectedSmile(1);
-       else if(rating.equals("BAD"))
-        sr.setSelectedSmile(2);
-       else if(rating.equals("OKAY"))
-           sr.setSelectedSmile(3);
-       else if(rating.equals("GOOD"))
-           sr.setSelectedSmile(4);
-        else
-            sr.setSelectedSmile(5);
-        return sr;
-    }
+
+
     void retrieveTheNearServices()
     {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -266,7 +305,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
                         one.num=ds.child("id_no").getValue().toString();
                         one.type="Toilet";
-                        one.rating=ds.child("rating").getValue().toString();
+                        one.address=ds.child("address").getValue().toString();
+                        one.rate=Integer.parseInt(ds.child("rating").getValue().toString());
 
                         toilets.add(one);
                     }
@@ -281,8 +321,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             one=new Institution();
                             one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
                             one.num=ds.child("id_no").getValue().toString();
+                            one.address=ds.child("address").getValue().toString();
                             one.type="Garbage";
-                            one.rating=ds.child("rating").getValue().toString();
+                            one.rate=Integer.parseInt(ds.child("rating").getValue().toString());
                             garbage.add(one);
                         }
                         /////Health care data
@@ -295,8 +336,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     one=new Institution();
                                     one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
                                     one.num=ds.child("id_no").getValue().toString();
+                                    one.address=ds.child("address").getValue().toString();
                                     one.type="Healthcare";
-                                    one.rating=ds.child("rating").getValue().toString();
+                                    one.rate=Integer.parseInt(ds.child("rating").getValue().toString());
                                     healthcare.add(one);
                                 }
                                 setInstiMarker();
@@ -337,7 +379,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
             ImageView rdp = (ImageView) mrker.findViewById(R.id.insti_dp);
-            toilets.get(i).address=getAddress(toilets.get(i).loc);
             rdp.setImageResource(R.drawable.toilet);
             LatLng ll = toilets.get(i).loc;
             MarkerOptions options = new MarkerOptions().title("Toilet").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
@@ -346,14 +387,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ////////////
             rdp.setImageResource(R.drawable.trash);
             ll = garbage.get(i).loc;
-            garbage.get(i).address=getAddress(garbage.get(i).loc);
             options = new MarkerOptions().title("Garbage").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
             mMap.addMarker(options);
 
             /////////////
             rdp.setImageResource(R.drawable.healthcare);
             ll = healthcare.get(i).loc;
-            healthcare.get(i).address=getAddress(healthcare.get(i).loc);
             options = new MarkerOptions().title("Healthcare").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
             mMap.addMarker(options);
         }
@@ -361,28 +400,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-       void setMyMarker(final Location loc)
+       void setMyMarker(final LatLng loc)
        {
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
             final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
             Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defaultdp);
             rdp.setImageBitmap(icon);
-            LatLng ll = new LatLng(loc.getLatitude(),loc.getLongitude());
+            LatLng ll = new LatLng(loc.latitude,loc.longitude);
             MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            if (my_marker == null)
-            {
-                my_marker = mMap.addMarker(options);
-            }
-            else
-            {
-                my_marker.remove();
-                my_marker = mMap.addMarker(options);
-            }
-            SharedPreferences.Editor editloc=locpref.edit();
-            editloc.putString("lat",loc.getLatitude()+"");
-            editloc.putString("lng",loc.getLongitude()+"");
-            editloc.commit();
+            mMap.addMarker(options);
+           changeCam(loc);
+
        }
     public Bitmap createDrawableFromView(Context context, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -398,93 +427,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return bitmap;
     }
-  String getAddress(LatLng loc)
-    {
-
-        return "kishkindapuri p.o. kothamangalam";
-    }
 
 
     ////////////////////    location listener
-    void locationListenSet()
-    {
-        initializeLocationManager();
-        MapsActivity.LocationListener[] mLocationListeners = new MapsActivity.LocationListener[] {
-                new MapsActivity.LocationListener(LocationManager.GPS_PROVIDER),
-                new MapsActivity.LocationListener(LocationManager.NETWORK_PROVIDER)
-        };
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[0]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
-        }
 
-    }
     public void changeCam(LatLng ll)
     {
         CameraUpdate location= CameraUpdateFactory.newLatLngZoom(ll,15);
         mMap.animateCamera(location);
 
     }
-    private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager");
-        if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        }
-    }
-    public class LocationListener implements android.location.LocationListener
-    {
-        public Location mLastLocation;
-        int i=0;
-
-        public LocationListener(String provider)
-        {
-            Log.e(TAG, "LocationListener " + provider);
-            mLastLocation = new Location(provider);
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location)
-        {
-           cur_location=location;
-           Toast.makeText(MapsActivity.this,"Location changed "+cur_location,LENGTH_LONG).show();
-           setMyMarker(location);
-           changeCam(new LatLng(location.getLatitude(),location.getLongitude()));
-        }
-
-        @Override
-        public void onProviderDisabled(String provider)
-        {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider)
-        {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
-        {
-            Log.e(TAG, "onStatusChanged: " + provider);
-        }
-
-
-    }
-
 }
