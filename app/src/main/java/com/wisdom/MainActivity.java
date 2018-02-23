@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Logged in as : " + userEmail, Toast.LENGTH_SHORT).show();
 
                     startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
+                    finish();
                 } else {
 
                     startActivityForResult(

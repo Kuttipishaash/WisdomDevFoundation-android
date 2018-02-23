@@ -24,7 +24,8 @@
         <activity android:name=".NewsFeedActivity" />
         <activity android:name=".IntroActivity" />
         <activity android:name=".ViewNewsActivity" />
-        <activity android:name=".SplashActivity"
+        <activity
+            android:name=".SplashActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,8 +33,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ContactUsActivity"/>
-
+        <activity android:name=".ContactUsActivity" />
+        <activity android:name=".MapsActivity" />
+        <activity android:name=".AboutUsActivity" />
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package com.wisdom;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
@@ -26,15 +27,13 @@ public class SplashActivity extends AppCompatActivity {
             startActivityForResult(new Intent(SplashActivity.this, IntroActivity.class), REQUEST_CODE_INTRO);
 
         } else {
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            /*
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     finish();
                 }
-            }, SPLASH_TIMEOUT); */
+            }, SPLASH_TIMEOUT);
         }
 
 
