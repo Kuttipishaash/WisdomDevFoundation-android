@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "411883061715-83lf7e5f4tt1eoqgh6ab7cmq6uki84th.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wisdom",
+            "certificate_hash": "107a01c1c9072e2a7eb6617b7d8abd05906adeaa"
+          }
+        },
+        {
           "client_id": "411883061715-jrs7nda7jop258q2m8qho3cju0olttsg.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "411883061715-jrs7nda7jop258q2m8qho3cju0olttsg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

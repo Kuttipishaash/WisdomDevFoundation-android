@@ -1,12 +1,9 @@
 package com.wisdom;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -14,59 +11,38 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 1;
-    private static final String PREF_FILE = "UserPreferences";
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mFirebaseAuthStateListner;
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mEditor;
-
-
-    private ProgressBar mProgressBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Wisdom");
         setContentView(R.layout.activity_main);
-        setTitle("main");
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference("/");
-
-        mSharedPreferences = getApplicationContext().getSharedPreferences(PREF_FILE, 0);
-        mEditor = mSharedPreferences.edit();
-        boolean previouslyStarted = mSharedPreferences.getBoolean("first_start", false);
-
-        if (!previouslyStarted) {
-            mEditor.putBoolean("first_start", true);
-            mEditor.apply();
-            //startActivity(new Intent(MainActivity.this, IntroActivity.class));
-        }
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+
         mFirebaseAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                if (firebaseUser != null) {
-                    startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
 
+                if (firebaseUser != null) {
                     String userID = firebaseUser.getUid();
                     String userEmail = firebaseUser.getEmail();
-                    UserInfo user = new UserInfo(2, userEmail);
-                    mDatabaseReference.child("user_info/" + userID).setValue(user);
                     Toast.makeText(MainActivity.this, "Logged in as : " + userEmail, Toast.LENGTH_SHORT).show();
+
+                    startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
                 } else {
+
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
@@ -76,26 +52,28 @@ public class MainActivity extends AppCompatActivity {
                                             new AuthUI.IdpConfig.GoogleBuilder().build()))
                                     .build(),
                             RC_SIGN_IN);
+
                 }
+
             }
         };
         mFirebaseAuth.addAuthStateListener(mFirebaseAuthStateListner);
 
-
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mFirebaseAuth.removeAuthStateListener(mFirebaseAuthStateListner);
-    }
+    /*
+                @Override
+                protected void onPause() {
+                    super.onPause();
+                    mFirebaseAuth.removeAuthStateListener(mFirebaseAuthStateListner);
+                }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mFirebaseAuth.addAuthStateListener(mFirebaseAuthStateListner);
-    }
-
+                @Override
+                protected void onResume() {
+                    super.onResume();
+                    mFirebaseAuth.addAuthStateListener(mFirebaseAuthStateListner);
+                }
+    */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
