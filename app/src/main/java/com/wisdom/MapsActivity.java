@@ -8,29 +8,20 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,18 +42,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hsalf.smilerating.SmileRating;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import it.sephiroth.android.library.floatingmenu.FloatingActionItem;
 
 import static android.content.ContentValues.TAG;
 import static android.widget.Toast.LENGTH_LONG;
@@ -72,10 +55,10 @@ import static android.widget.Toast.LENGTH_LONG;
  */
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    public LocationManager mLocationManager = null;
-    SupportMapFragment  mapFragment;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
+    public LocationManager mLocationManager = null;
+    SupportMapFragment mapFragment;
     BottomSheetBehavior<View> mBottomSheetBehavior1;
     String cur_typ;
     LatLng cur_location=null;
@@ -117,14 +100,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         cur_location=new LatLng(9.7433562,76.368284);
         new Thread(new Runnable() {
             public void run() {
-                while (locpref.getString("lat","").equals("")||cur_location==null);
                 progressBar.dismiss();
                 retrieveTheNearServices();
                 Log.d("firebase checking","yaa fine");
             }
         }).start();
 
-        Button intnt_btn=(Button)findViewById(R.id.intnt_btn);
+        Button intnt_btn = findViewById(R.id.intnt_btn);
         intnt_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         statmMap = mMap;
         setMyMarker(cur_location);
-        bottomSheet = (View)findViewById(R.id.btm_sheet);
+        bottomSheet = findViewById(R.id.btm_sheet);
         final BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
         mBottomSheetBehavior1.setPeekHeight(0);
         mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -169,22 +151,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
                 mBottomSheetBehavior1.setPeekHeight(450);
                 final View bottomSheet = findViewById(R.id.btm_sheet);
-                TextView address=(TextView)bottomSheet.findViewById(R.id.address_name);
+                TextView address = bottomSheet.findViewById(R.id.address_name);
                 address.setSelected(true);
-                TextView type=(TextView)bottomSheet.findViewById(R.id.type);
-                LinearLayout imgs=(LinearLayout)bottomSheet.findViewById(R.id.imgs);
-                SmileRating sr=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
+                TextView type = bottomSheet.findViewById(R.id.type);
+                LinearLayout imgs = bottomSheet.findViewById(R.id.imgs);
+                SmileRating sr = bottomSheet.findViewById(R.id.smile_rating);
                 sr.setClickable(false);
                 String imageName = "";
-                Button addcomnt=(Button)bottomSheet.findViewById(R.id.button2);
-                ListView comments=(ListView)bottomSheet.findViewById(R.id.comments);
+                Button addcomnt = bottomSheet.findViewById(R.id.button2);
+                ListView comments = bottomSheet.findViewById(R.id.comments);
                 addcomnt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v)
                     {
-                            View btm_review=(View)findViewById(R.id.btm_review);
+                        View btm_review = findViewById(R.id.btm_review);
                             btm_review.setVisibility(View.VISIBLE);
-                            View btm_sheet=(View)findViewById(R.id.btm_sheet);
+                        View btm_sheet = findViewById(R.id.btm_profile);
                             btm_sheet.setVisibility(View.INVISIBLE);
                     }
                 });
@@ -250,18 +232,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     View rView = inflater.inflate(R.layout.insti_btm_sheet_imgs, null);
                     int resID = getResources().getIdentifier(imageName+ ThreadLocalRandom.current().nextInt(1, 8 + 1)
 ,"drawable", "com.wisdom");
-                    ImageView image=(ImageView)rView.findViewById(R.id.insti_img);
+                    ImageView image = rView.findViewById(R.id.insti_img);
                     image.setImageResource(resID );
                     imgs.addView(rView);
                 }
 
                 /////////////////////////////
-                Button setcomnt=(Button)bottomSheet.findViewById(R.id.frag_done);
+                Button setcomnt = bottomSheet.findViewById(R.id.frag_done);
                 setcomnt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        EditText commnt=(EditText)bottomSheet.findViewById(R.id.editText2);
-                        SmileRating rating=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
+                        EditText commnt = bottomSheet.findViewById(R.id.editText2);
+                        SmileRating rating = bottomSheet.findViewById(R.id.smile_rating);
                         int rate=rating.getRating();
                         String comment=commnt.getText().toString();
                         Institution.CommentsRating one=new Institution.CommentsRating();
@@ -274,9 +256,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         else if(cur_typ.equals("H"))
                             healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
                         commentLister.notifyDataSetChanged();
-                        View btm_review=(View)findViewById(R.id.btm_review);
+                        View btm_review = findViewById(R.id.btm_review);
                         btm_review.setVisibility(View.INVISIBLE);
-                        View btm_sheet=(View)findViewById(R.id.btm_sheet);
+                        View btm_sheet = findViewById(R.id.btm_profile);
                         btm_sheet.setVisibility(View.VISIBLE);
                     }
                 });
@@ -378,7 +360,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for(i=0;i<toilets.size();++i)
         {
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
-            ImageView rdp = (ImageView) mrker.findViewById(R.id.insti_dp);
+            ImageView rdp = mrker.findViewById(R.id.insti_dp);
             rdp.setImageResource(R.drawable.toilet);
             LatLng ll = toilets.get(i).loc;
             MarkerOptions options = new MarkerOptions().title("Toilet").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
@@ -404,7 +386,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
        {
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
-            final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
+           final CircleImageView rdp = mrker.findViewById(R.id.imageView1);
             Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defaultdp);
             rdp.setImageBitmap(icon);
             LatLng ll = new LatLng(loc.latitude,loc.longitude);
