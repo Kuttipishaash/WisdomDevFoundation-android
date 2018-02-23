@@ -3,7 +3,12 @@ package com.wisdom;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,8 +23,12 @@ public class ViewNewsActivity extends AppCompatActivity {
     private String downloadUrl;
     private String aricleTitle;
     private String articleContent;
+    private String imageUrl;
+
     private TextView mHeading;
     private TextView mContent;
+    private ImageView mImage;
+    private ProgressBar mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +38,8 @@ public class ViewNewsActivity extends AppCompatActivity {
         downloadUrl = getIntent().getStringExtra("downloadUrl");
         mHeading = (TextView) findViewById(R.id.text_article_heading);
         mContent = (TextView) findViewById(R.id.text_article_content);
+        mImage = (ImageView) findViewById(R.id.img_article);
+        mProgress = (ProgressBar) findViewById(R.id.prog_view_feed);
 
         new JsoupExtractTask().execute();
     }
@@ -45,6 +56,10 @@ public class ViewNewsActivity extends AppCompatActivity {
 
             mHeading.setText(aricleTitle);
             mContent.setText(articleContent);
+            mProgress.setVisibility(View.GONE);
+            Glide.with(ViewNewsActivity.this)
+                    .load(imageUrl)
+                    .into(mImage);
         }
 
         @Override
@@ -61,6 +76,9 @@ public class ViewNewsActivity extends AppCompatActivity {
                 for(Element content : contents) {
                     articleContent = content.text();
                 }
+
+                Element image = doc.select("div#quotablecontent > p > img").first();
+                imageUrl = image.attr("src");
 
             } catch (IOException e) {
                 e.printStackTrace();
