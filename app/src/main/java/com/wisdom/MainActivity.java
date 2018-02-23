@@ -61,19 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*
-                @Override
-                protected void onPause() {
-                    super.onPause();
-                    mFirebaseAuth.removeAuthStateListener(mFirebaseAuthStateListner);
-                }
-
-                @Override
-                protected void onResume() {
-                    super.onResume();
-                    mFirebaseAuth.addAuthStateListener(mFirebaseAuthStateListner);
-                }
-    */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -84,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
 
                 startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
-                Toast.makeText(MainActivity.this, "Signed in", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
                 // Sign in failed
