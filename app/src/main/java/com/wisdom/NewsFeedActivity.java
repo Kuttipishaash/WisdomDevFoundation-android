@@ -83,8 +83,22 @@ public class NewsFeedActivity extends AppCompatActivity {
                 List<FeedItem> feed = response.body();
 
                 mFeedList = (ListView) findViewById(R.id.list_feed);
-                mFeedList.setAdapter(new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed));
+                mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed);
+
+                mFeedList.setAdapter(mFeedAdapter);
                 progressBar.setVisibility(View.GONE);
+
+                mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        FeedItem item = mFeedAdapter.getItemClicked(position);
+
+                        Intent intent = new Intent(NewsFeedActivity.this, ViewNewsActivity.class);
+                        intent.putExtra("articleHeading", item.getTitle().getRendered());
+                        intent.putExtra("articleContent", item.getContent().getRendered());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
@@ -93,16 +107,6 @@ public class NewsFeedActivity extends AppCompatActivity {
             }
         });
 
-        mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FeedItem item = mFeedAdapter.getItemClicked(position);
-
-                Intent intent = new Intent(NewsFeedActivity.this, ViewNewsActivity.class);
-                intent.putExtra("downloadUrl", item.getLink());
-                startActivity(intent);
-            }
-        });
     }
 
     private void initNavDrawer() {
