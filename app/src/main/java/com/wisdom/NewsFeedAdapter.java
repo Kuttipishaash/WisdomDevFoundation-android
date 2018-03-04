@@ -37,12 +37,14 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
         }
 
         TextView mArticleHeading = (TextView) view.findViewById(R.id.text_headline);
-        TextView mActualUrl = (TextView) view.findViewById(R.id.text_download_url);
+        TextView mActualContent = (TextView) view.findViewById(R.id.text_article_content);
         ImageView mThumb = (ImageView) view.findViewById(R.id.img_thumb);
         final ImageView mShare = (ImageView) view.findViewById(R.id.btn_img_share);
 
         FeedItem feedItem = getItem(position);
-        mArticleHeading.setText(feedItem.getArticleHeading());
+        mArticleHeading.setText(feedItem.getTitle().getRendered());
+        mActualContent.setText(feedItem.getContent().getRendered());
+        /*
         Glide.with(getContext())
                 .load(feedItem.getImageUrl())
                 .into(mThumb);
@@ -60,8 +62,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
                 getContext().startActivity(Intent.createChooser(sendIntent, "Share article with"));
             }
         });
-        mActualUrl.setText(feedItem.getShortContent());
-
+*/
         return view;
     }
 

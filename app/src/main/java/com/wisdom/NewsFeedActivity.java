@@ -33,6 +33,13 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 /**
  * Created by praji on 2/22/2018.
  */
@@ -56,37 +63,38 @@ public class NewsFeedActivity extends AppCompatActivity {
 */
         setTitle("News");
 
-        disableSecurity();
-        mFeedList = (ListView) findViewById(R.id.list_feed);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                mDrawerLayout.closeDrawers();
-
-                switch (item.getItemId()) {
-                    case R.id.nav_contact:
-                        startActivity(new Intent(NewsFeedActivity.this, ContactUsActivity.class));
-                        break;
-                    case R.id.nav_info:
-                        startActivity(new Intent(NewsFeedActivity.this, AboutUsActivity.class));
-                        break;
-                    case R.id.nav_map:
-                        startActivity(new Intent(NewsFeedActivity.this, MapsActivity.class));
-                        break;
-                    default:
-                        return false;
-                }
-                return false;
-            }
-        });
-
-        feedItems = new ArrayList<FeedItem>();
+        initNavDrawer();
 
         progressBar = (ProgressBar) findViewById(R.id.prog_newsfeed);
 
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl("http://wisdominitiatives.org")
+                .addConverterFactory(GsonConverterFactory.create());
+        Retrofit retrofit = builder
+                .client(httpClient.build())
+                .build();
+        FeedClient feedClient = retrofit.create(FeedClient.class);
+        Call<List<FeedItem>> call = feedClient.feeds();
+        call.enqueue(new Callback<List<FeedItem>>() {
+            @Override
+            public void onResponse(Call<List<FeedItem>> call, Response<List<FeedItem>> response) {
+
+                List<FeedItem> feed = response.body();
+
+                mFeedList = (ListView) findViewById(R.id.list_feed);
+                mFeedList.setAdapter(new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed));
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<List<FeedItem>> call, Throwable t) {
+                Toast.makeText(NewsFeedActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    /*
         mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -97,9 +105,10 @@ public class NewsFeedActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    //    new JSoupLoaderTask().execute();
+        new JSoupLoaderTask().execute();
+        */
     }
-
+/*
     private class JSoupLoaderTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -160,7 +169,7 @@ public class NewsFeedActivity extends AppCompatActivity {
             return null;
         }
     }
-
+*/
     private void disableSecurity() {
         // Create a trust manager that does not validate certificate chains like the default
         TrustManager[] trustAllCerts = new TrustManager[]{
@@ -191,4 +200,30 @@ public class NewsFeedActivity extends AppCompatActivity {
 
     }
 
+    private void initNavDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                mDrawerLayout.closeDrawers();
+
+                switch (item.getItemId()) {
+                    case R.id.nav_contact:
+                        startActivity(new Intent(NewsFeedActivity.this, ContactUsActivity.class));
+                        break;
+                    case R.id.nav_info:
+                        startActivity(new Intent(NewsFeedActivity.this, AboutUsActivity.class));
+                        break;
+                    case R.id.nav_map:
+                        startActivity(new Intent(NewsFeedActivity.this, MapsActivity.class));
+                        break;
+                    default:
+                        return false;
+                }
+                return false;
+            }
+        });
+    }
 }
