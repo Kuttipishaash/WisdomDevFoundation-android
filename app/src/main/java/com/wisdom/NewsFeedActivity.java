@@ -93,111 +93,16 @@ public class NewsFeedActivity extends AppCompatActivity {
             }
         });
 
-
-    /*
         mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FeedItem item = mFeedAdapter.getItemClicked(position);
 
                 Intent intent = new Intent(NewsFeedActivity.this, ViewNewsActivity.class);
-                intent.putExtra("downloadUrl", item.getActualUrl());
+                intent.putExtra("downloadUrl", item.getLink());
                 startActivity(intent);
             }
         });
-        new JSoupLoaderTask().execute();
-        */
-    }
-/*
-    private class JSoupLoaderTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            progressBar.setVisibility(View.GONE);
-            mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feedItems);
-            mFeedList.setAdapter(mFeedAdapter);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            try {
-                List<String> headings = new ArrayList<String>();
-                List<String> actualUrls = new ArrayList<String>();
-                List<String> imageUrls = new ArrayList<String>();
-                List<String> sampleContents = new ArrayList<String>();
-
-                FeedItem feedItem;
-
-                Document doc = Jsoup.connect("https://blog.udacity.com").get();
-
-                Elements articles = doc.select("article > header > h1 > a");
-                for (Element article : articles) {
-                    headings.add(article.text());
-                    actualUrls.add(article.attr("href"));
-                }
-
-                Elements images = doc.select("article > div > p > img");
-                for (Element image : images) {
-                    imageUrls.add(image.attr("src"));
-                }
-
-                Elements contents = doc.getElementsByClass("entry-content");
-                for (Element content : contents) {
-                    sampleContents.add(content.text().substring(0, 130));
-                }
-
-                for (int i = 0; i < 7; i++) {
-                    feedItem = new FeedItem();
-                    feedItem.setArticleHeading(headings.get(i));
-                    feedItem.setActualUrl(actualUrls.get(i));
-                    feedItem.setImageUrl(imageUrls.get(i));
-                    feedItem.setShortContent(sampleContents.get(i));
-                    feedItems.add(feedItem);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-*/
-    private void disableSecurity() {
-        // Create a trust manager that does not validate certificate chains like the default
-        TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                        //No need to implement.
-                    }
-
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                        //No need to implement.
-                    }
-                }
-        };
-
-        // Install the all-trusting trust manager
-        try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
-            Log.e("ERR_DISABLE_SECURITY", "Security has note been dsiabled");
-        }
-
     }
 
     private void initNavDrawer() {

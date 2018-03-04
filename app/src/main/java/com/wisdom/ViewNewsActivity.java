@@ -41,51 +41,6 @@ public class ViewNewsActivity extends AppCompatActivity {
         mImage = (ImageView) findViewById(R.id.img_article);
         mProgress = (ProgressBar) findViewById(R.id.prog_view_feed);
 
-        new JsoupExtractTask().execute();
     }
 
-    private class JsoupExtractTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            mHeading.setText(aricleTitle);
-            mContent.setText(articleContent);
-            mProgress.setVisibility(View.GONE);
-            Glide.with(ViewNewsActivity.this)
-                    .load(imageUrl)
-                    .into(mImage);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                Document doc = Jsoup.connect(downloadUrl).get();
-
-                Elements titles = doc.getElementsByClass("row title");
-                for(Element title : titles) {
-                    aricleTitle = title.text();
-                }
-
-                Elements contents = doc.getElementsByClass("entry-content");
-                for(Element content : contents) {
-                    articleContent = content.text();
-                }
-
-                Element image = doc.select("div#quotablecontent > p > img").first();
-                imageUrl = image.attr("src");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            return null;
-        }
-    }
 }
