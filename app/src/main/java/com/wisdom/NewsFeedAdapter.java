@@ -48,21 +48,22 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
         Glide.with(getContext())
                 .load(feedItem.getImageUrl())
                 .into(mThumb);
+        */
+
         mShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FeedItem clickedItem = new FeedItem();
                 String shareContent;
 
-                clickedItem = getItem(position);
-                shareContent = "Check out this article: \n" + clickedItem.getActualUrl() + "\nShared from Wisdom Foundation";
+                FeedItem clickedItem = getItem(position);
+                shareContent = "Check out this article: \n" + clickedItem.getLink() + "\nShared from Wisdom Foundation";
                 Intent sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                 sendIntent.setType("text/plain");
                 sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
                 getContext().startActivity(Intent.createChooser(sendIntent, "Share article with"));
             }
         });
-*/
+
         return view;
     }
 
