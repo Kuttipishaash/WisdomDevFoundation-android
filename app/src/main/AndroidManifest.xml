@@ -25,7 +25,9 @@
             android:name=".NewsFeedActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".IntroActivity" />
-        <activity android:name=".ViewNewsActivity" />
+        <activity
+            android:name=".ViewNewsActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
