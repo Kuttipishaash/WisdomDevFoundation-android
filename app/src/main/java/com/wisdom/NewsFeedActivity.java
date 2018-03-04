@@ -97,7 +97,7 @@ public class NewsFeedActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        new JSoupLoaderTask().execute();
+    //    new JSoupLoaderTask().execute();
     }
 
     private class JSoupLoaderTask extends AsyncTask<Void, Void, Void> {

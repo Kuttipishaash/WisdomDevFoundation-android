@@ -3,10 +3,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_panel"
-            android:icon="@drawable/ic_face_black_24dp"
-            android:title="Our Panel Members" />
-        <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_pin_drop_white_24dp"
             android:title="Map Services" />
