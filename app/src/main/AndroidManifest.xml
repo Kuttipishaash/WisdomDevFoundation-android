@@ -24,7 +24,7 @@
         <activity android:name=".NewsFeedActivity" />
         <activity android:name=".IntroActivity" />
         <activity android:name=".ViewNewsActivity" />
-        <activity android:name=".SplashActivity"
+        <activity android:name=".MapsActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
