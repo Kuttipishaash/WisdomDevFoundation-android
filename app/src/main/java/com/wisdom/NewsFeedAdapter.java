@@ -3,16 +3,12 @@ package com.wisdom;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -39,7 +35,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
         TextView mArticleHeading = (TextView) view.findViewById(R.id.text_headline);
         TextView mActualContent = (TextView) view.findViewById(R.id.text_article_content);
         ImageView mThumb = (ImageView) view.findViewById(R.id.img_thumb);
-        final ImageView mShare = (ImageView) view.findViewById(R.id.btn_img_share);
+        final LinearLayout mShare = (LinearLayout) view.findViewById(R.id.btn_img_share);
 
         FeedItem feedItem = getItem(position);
         mArticleHeading.setText(feedItem.getTitle().getRendered());

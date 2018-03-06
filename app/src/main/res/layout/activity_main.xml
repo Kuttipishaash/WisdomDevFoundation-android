@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.wisdom.MainActivity">
+    tools:context="com.wisdom.RedirectActivity">
     <!--
         <EditText
             android:id="@+id/et_email"

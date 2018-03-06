@@ -1,5 +1,6 @@
 package com.wisdom;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,7 +9,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -35,14 +38,26 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hsalf.smilerating.SmileRating;
+import com.mahc.custombottomsheetbehavior.BottomSheetBehaviorGoogleMapsLike;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -55,13 +70,14 @@ import static android.widget.Toast.LENGTH_LONG;
  */
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    public LocationManager mLocationManager = null;
+    SupportMapFragment  mapFragment;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
-    public LocationManager mLocationManager = null;
-    SupportMapFragment mapFragment;
     BottomSheetBehavior<View> mBottomSheetBehavior1;
     String cur_typ;
     LatLng cur_location=null;
+    LatLng destination=null;
     ArrayList<Institution> toilets=new ArrayList<Institution>();
     ArrayList<Institution> garbage=new ArrayList<Institution>();
     ArrayList<Institution> healthcare=new ArrayList<Institution>();
@@ -100,13 +116,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         cur_location=new LatLng(9.7433562,76.368284);
         new Thread(new Runnable() {
             public void run() {
+                while (locpref.getString("lat","").equals("")||cur_location==null);
                 progressBar.dismiss();
                 retrieveTheNearServices();
                 Log.d("firebase checking","yaa fine");
             }
         }).start();
 
-        Button intnt_btn = findViewById(R.id.intnt_btn);
+        Button intnt_btn=(Button)findViewById(R.id.intnt_btn);
         intnt_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +140,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         statmMap = mMap;
         setMyMarker(cur_location);
-        bottomSheet = findViewById(R.id.btm_sheet);
+        drawRoute();
+        bottomSheet = (View)findViewById(R.id.btm_sheet);
         final BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
         mBottomSheetBehavior1.setPeekHeight(0);
         mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -149,24 +167,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
-                mBottomSheetBehavior1.setPeekHeight(450);
+                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 final View bottomSheet = findViewById(R.id.btm_sheet);
-                TextView address = bottomSheet.findViewById(R.id.address_name);
+                TextView address=(TextView)bottomSheet.findViewById(R.id.address_name);
                 address.setSelected(true);
-                TextView type = bottomSheet.findViewById(R.id.type);
-                LinearLayout imgs = bottomSheet.findViewById(R.id.imgs);
-                SmileRating sr = bottomSheet.findViewById(R.id.smile_rating);
+                TextView type=(TextView)bottomSheet.findViewById(R.id.type);
+                LinearLayout imgs=(LinearLayout)bottomSheet.findViewById(R.id.imgs);
+
+                SmileRating sr=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
                 sr.setClickable(false);
                 String imageName = "";
-                Button addcomnt = bottomSheet.findViewById(R.id.button2);
-                ListView comments = bottomSheet.findViewById(R.id.comments);
+                Button addcomnt=(Button)bottomSheet.findViewById(R.id.button2);
+                ListView comments=(ListView)bottomSheet.findViewById(R.id.comments);
                 addcomnt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v)
                     {
-                        View btm_review = findViewById(R.id.btm_review);
+                            View btm_review=(View)findViewById(R.id.btm_review);
                             btm_review.setVisibility(View.VISIBLE);
-                        View btm_sheet = findViewById(R.id.btm_profile);
+                            View btm_sheet=(View)findViewById(R.id.btm_sheet);
                             btm_sheet.setVisibility(View.INVISIBLE);
                     }
                 });
@@ -232,18 +251,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     View rView = inflater.inflate(R.layout.insti_btm_sheet_imgs, null);
                     int resID = getResources().getIdentifier(imageName+ ThreadLocalRandom.current().nextInt(1, 8 + 1)
 ,"drawable", "com.wisdom");
-                    ImageView image = rView.findViewById(R.id.insti_img);
+                    ImageView image=(ImageView)rView.findViewById(R.id.insti_img);
                     image.setImageResource(resID );
                     imgs.addView(rView);
                 }
 
                 /////////////////////////////
-                Button setcomnt = bottomSheet.findViewById(R.id.frag_done);
+                Button setcomnt=(Button)bottomSheet.findViewById(R.id.frag_done);
                 setcomnt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        EditText commnt = bottomSheet.findViewById(R.id.editText2);
-                        SmileRating rating = bottomSheet.findViewById(R.id.smile_rating);
+                        EditText commnt=(EditText)bottomSheet.findViewById(R.id.editText2);
+                        SmileRating rating=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
                         int rate=rating.getRating();
                         String comment=commnt.getText().toString();
                         Institution.CommentsRating one=new Institution.CommentsRating();
@@ -256,9 +275,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         else if(cur_typ.equals("H"))
                             healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
                         commentLister.notifyDataSetChanged();
-                        View btm_review = findViewById(R.id.btm_review);
+                        View btm_review=(View)findViewById(R.id.btm_review);
                         btm_review.setVisibility(View.INVISIBLE);
-                        View btm_sheet = findViewById(R.id.btm_profile);
+                        View btm_sheet=(View)findViewById(R.id.btm_sheet);
                         btm_sheet.setVisibility(View.VISIBLE);
                     }
                 });
@@ -354,13 +373,173 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
+    void drawRoute()
+    {
+        //String url = getDirectionsUrl(cur_location,destination);
+        String url = getDirectionsUrl(cur_location,destination);
+        DownloadTask downloadTask = new DownloadTask();
+        downloadTask.execute(url);
+    }
+    private String getDirectionsUrl(LatLng origin,LatLng dest){
+        origin=new LatLng(9.993421,76.358412);
+        dest=new LatLng(10.033090,76.295216);
+        // Origin of route
+        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Building the parameters to the web service
+        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+
+        return url;
+    }
+    @SuppressLint("LongLogTag")
+    private String downloadUrl(String strUrl) throws IOException{
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try{
+            URL url = new URL(strUrl);
+
+            // Creating an http connection to communicate with url
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            // Connecting to url
+            urlConnection.connect();
+
+            // Reading data from url
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line = "";
+            while( ( line = br.readLine()) != null){
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        }catch(Exception e){
+            Log.d("Exception", e.toString());
+        }finally{
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+
+    // Fetches data from url passed
+    private class DownloadTask extends AsyncTask<String, Void, String> {
+
+        // Downloading data in non-ui thread
+        @Override
+        protected String doInBackground(String... url) {
+
+            // For storing data from web service
+            String data = "";
+
+            try{
+                // Fetching the data from web service
+                data = downloadUrl(url[0]);
+            }catch(Exception e){
+                Log.d("Background Task",e.toString());
+            }
+            return data;
+        }
+
+        // Executes in UI thread, after the execution of
+        // doInBackground()
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            ParserTask parserTask = new ParserTask();
+
+            // Invokes the thread for parsing the JSON data
+            parserTask.execute(result);
+        }
+    }
+
+    /** A class to parse the Google Places in JSON format */
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+
+        // Parsing the data in non-ui thread
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try{
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+
+                // Starts parsing data
+                routes = parser.parse(jObject);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        // Executes in UI thread, after the parsing process
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList<LatLng> points = null;
+            PolylineOptions lineOptions = null;
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            // Traversing through all the routes
+            for(int i=0;i<result.size();i++){
+                points = new ArrayList<LatLng>();
+                lineOptions = new PolylineOptions();
+
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+
+                // Fetching all the points in i-th route
+                for(int j=0;j<path.size();j++){
+                    HashMap<String,String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(10);
+                lineOptions.color(Color.GREEN);
+            }
+
+            // Drawing polyline in the Google Map for the i-th route
+            mMap.addPolyline(lineOptions);
+        }
+    }
+
     void setInstiMarker()
     {
         int i=0;
         for(i=0;i<toilets.size();++i)
         {
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
-            ImageView rdp = mrker.findViewById(R.id.insti_dp);
+            ImageView rdp = (ImageView) mrker.findViewById(R.id.insti_dp);
             rdp.setImageResource(R.drawable.toilet);
             LatLng ll = toilets.get(i).loc;
             MarkerOptions options = new MarkerOptions().title("Toilet").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
@@ -386,7 +565,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
        {
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
-           final CircleImageView rdp = mrker.findViewById(R.id.imageView1);
+            final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
             Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defaultdp);
             rdp.setImageBitmap(icon);
             LatLng ll = new LatLng(loc.latitude,loc.longitude);

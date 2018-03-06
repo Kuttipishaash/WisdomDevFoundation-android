@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class RedirectActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 1;
     private FirebaseAuth mFirebaseAuth;
@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
                 if (firebaseUser != null) {
                     String userID = firebaseUser.getUid();
                     String userEmail = firebaseUser.getEmail();
-                    Toast.makeText(MainActivity.this, "Logged in as : " + userEmail, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RedirectActivity.this, "Logged in as : " + userEmail, Toast.LENGTH_SHORT).show();
 
-                    startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
+                    startActivity(new Intent(RedirectActivity.this, NewsFeedActivity.class));
                     finish();
                 } else {
 
@@ -71,23 +71,23 @@ public class MainActivity extends AppCompatActivity {
             // Successfully signed in
             if (resultCode == RESULT_OK) {
 
-                startActivity(new Intent(MainActivity.this, NewsFeedActivity.class));
+                startActivity(new Intent(RedirectActivity.this, NewsFeedActivity.class));
                 finish();
             } else {
                 // Sign in failed
                 if (response == null) {
                     // User pressed back button
-                    Toast.makeText(MainActivity.this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RedirectActivity.this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Toast.makeText(MainActivity.this, "No network", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RedirectActivity.this, "No network", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Toast.makeText(MainActivity.this, "Unknown Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RedirectActivity.this, "Unknown Error", Toast.LENGTH_SHORT).show();
                 }
             }
 
