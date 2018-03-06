@@ -57,33 +57,4 @@ public class FeedItem {
         }
     }
 
-    /*
-    private String actualUrl;
-    private String imageUrl;
-    private String shortContent;
-
-    public String getShortContent() {
-        return shortContent;
-    }
-
-    public void setShortContent(String shortContent) {
-        this.shortContent = shortContent;
-    }
-
-    public String getActualUrl() {
-        return actualUrl;
-    }
-
-    public void setActualUrl(String actualUrl) {
-        this.actualUrl = actualUrl;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-*/
 }
