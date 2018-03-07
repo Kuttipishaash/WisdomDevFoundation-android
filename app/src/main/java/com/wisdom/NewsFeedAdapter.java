@@ -33,13 +33,13 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
         }
 
         TextView mArticleHeading = (TextView) view.findViewById(R.id.text_headline);
-        TextView mActualContent = (TextView) view.findViewById(R.id.text_article_content);
+        TextView mActualContent = (TextView) view.findViewById(R.id.text_excerpt);
         ImageView mThumb = (ImageView) view.findViewById(R.id.img_thumb);
         final LinearLayout mShare = (LinearLayout) view.findViewById(R.id.btn_img_share);
 
         FeedItem feedItem = getItem(position);
         mArticleHeading.setText(feedItem.getTitle().getRendered());
-        mActualContent.setText(feedItem.getContent().getRendered());
+        mActualContent.setText(feedItem.getExcerpt().getRendered());
         /*
         Glide.with(getContext())
                 .load(feedItem.getImageUrl())

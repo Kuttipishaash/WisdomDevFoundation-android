@@ -14,6 +14,7 @@ public class FeedItem {
     private String link;
     private FeedTitle title;
     private FeedContent content;
+    private FeedExcerpt excerpt;
 
     public class FeedTitle {
         private String rendered;
@@ -30,6 +31,19 @@ public class FeedItem {
         public String getRendered() {
             return fromHtml(rendered).toString();
         }
+    }
+
+    public class FeedExcerpt {
+        private String rendered;
+
+        public String getRendered() {
+            return fromHtml(rendered).toString();
+        }
+    }
+
+
+    public FeedExcerpt getExcerpt() {
+        return excerpt;
     }
 
     public String getDate() {
