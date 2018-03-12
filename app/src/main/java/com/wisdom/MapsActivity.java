@@ -10,10 +10,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
@@ -39,17 +43,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.hsalf.smilerating.SmileRating;
 import com.mahc.custombottomsheetbehavior.BottomSheetBehaviorGoogleMapsLike;
 
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,11 +88,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final float LOCATION_DISTANCE = 10f;
     BottomSheetBehavior<View> mBottomSheetBehavior1;
     String cur_typ;
+    ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
+    ArrayList<Integer> upr_activities=new ArrayList<Integer>();
+
     LatLng cur_location=null;
     LatLng destination=null;
     ArrayList<Institution> toilets=new ArrayList<Institution>();
     ArrayList<Institution> garbage=new ArrayList<Institution>();
     ArrayList<Institution> healthcare=new ArrayList<Institution>();
+    ArrayList<Locations> locations=new ArrayList<Locations>();
     View bottomSheet;
     String[] person_name={"Kuttapan","Shaji","Bilal","Jose","Prabhakaran","Romy","Enthiran","Tonikutan"};
     String[] person_comment={"Havent seen such a beutiful place",
@@ -100,8 +116,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     GoogleMap mMap=null,statmMap;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        startService(new Intent(getBaseContext(), LocationService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        locationListenSet();
         final SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
         final ProgressDialog progressBar = new ProgressDialog(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -113,12 +131,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         progressBar.setProgress(0);
         progressBar.setMax(100);
         progressBar.show();
-        cur_location=new LatLng(9.7433562,76.368284);
+        cur_location=null;
         new Thread(new Runnable() {
             public void run() {
                 while (locpref.getString("lat","").equals("")||cur_location==null);
                 progressBar.dismiss();
-                retrieveTheNearServices();
+               // retrieveTheNearServices();
                 Log.d("firebase checking","yaa fine");
             }
         }).start();
@@ -139,7 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this,"map ready",LENGTH_LONG).show();
         mMap = googleMap;
         statmMap = mMap;
-        setMyMarker(cur_location);
+        //setMyMarker(cur_location);
         drawRoute();
         bottomSheet = (View)findViewById(R.id.btm_sheet);
         final BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
@@ -295,83 +313,69 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
         /////Toilet data
-        myRef.child("Toilet").addValueEventListener(new ValueEventListener() {
+        myRef.child("Locations").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 int i=0;
-                toilets=new ArrayList<Institution>();
                 for(DataSnapshot ds:dataSnapshot.getChildren())
                     {
-                        one=new Institution();
-                        one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
-                        one.num=ds.child("id_no").getValue().toString();
-                        one.type="Toilet";
-                        one.address=ds.child("address").getValue().toString();
-                        one.rate=Integer.parseInt(ds.child("rating").getValue().toString());
-
-                        toilets.add(one);
-                    }
-
-                ////Trash data
-                myRef.child("Garbage").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        garbage=new ArrayList<Institution>();
-                        for(DataSnapshot ds:dataSnapshot.getChildren())
+                        if(30>getDistanceFromLatLonInKm(cur_location.latitude,cur_location.longitude,
+                                Double.parseDouble(ds.child("lat").getValue().toString()),
+                                Double.parseDouble(ds.child("lng" +
+                                        "").getValue().toString())))
                         {
-                            one=new Institution();
-                            one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
-                            one.num=ds.child("id_no").getValue().toString();
-                            one.address=ds.child("address").getValue().toString();
-                            one.type="Garbage";
-                            one.rate=Integer.parseInt(ds.child("rating").getValue().toString());
-                            garbage.add(one);
-                        }
-                        /////Health care data
-                        myRef.child("Healthcare").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                healthcare=new ArrayList<Institution>();
-                                for(DataSnapshot ds:dataSnapshot.getChildren())
+                            final Locations loctn=new Locations();
+                            loctn.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
+                            loctn.num=Integer.parseInt(ds.child("id_no").getValue().toString());
+                            loctn.type=ds.child("type").getValue().toString();
+                            loctn.address=ds.child("address").getValue().toString();
+                            loctn.name=ds.child("name").getValue().toString();
+                            loctn.rating=Integer.parseInt(ds.child("rating").getValue().toString());
+
+                            myRef.child("Comments").child(loctn.num+"").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot)
                                 {
-                                    one=new Institution();
-                                    one.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
-                                    one.num=ds.child("id_no").getValue().toString();
-                                    one.address=ds.child("address").getValue().toString();
-                                    one.type="Healthcare";
-                                    one.rate=Integer.parseInt(ds.child("rating").getValue().toString());
-                                    healthcare.add(one);
+                                    if(dataSnapshot==null)
+                                        loctn.tot_comments=0;
+                                    else
+                                        loctn.tot_comments=(int) dataSnapshot.getChildrenCount();
+                                    locations.add(loctn);
                                 }
-                                setInstiMarker();
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w(TAG, "Failed to read value.", error.toException());
-                            }
-                        });
-
-
+                                @Override
+                                public void onCancelled(DatabaseError error) {
+                                    // Failed to read value
+                                    Log.w(TAG, "Failed to read value.", error.toException());
+                                }
+                            });
+                        }
                     }
-
+                    setInstiMarker();
+            }
                     @Override
                     public void onCancelled(DatabaseError error) {
                         // Failed to read value
                         Log.w(TAG, "Failed to read value.", error.toException());
                     }
                 });
+    }
+    double getDistanceFromLatLonInKm(double lat1,double lon1,double lat2,double lon2) {
+        double  R = 6371; // Radius of the earth in km
+        double  dLat = deg2rad(lat2-lat1);  // deg2rad below
+        double  dLon = deg2rad(lon2-lon1);
+        double  a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+        double  c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double  d = R * c; // Distance in km
+        return d;
+    }
 
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-
+    double  deg2rad(double deg)
+    {
+        return deg * (Math.PI/180);
     }
     void drawRoute()
     {
@@ -443,6 +447,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Fetches data from url passed
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     private class DownloadTask extends AsyncTask<String, Void, String> {
 
         // Downloading data in non-ui thread
@@ -536,26 +541,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     void setInstiMarker()
     {
         int i=0;
-        for(i=0;i<toilets.size();++i)
+        Log.d("location size= ",locations.size()+"");
+
+        for(i=0;i<locations.size();++i)
         {
-            View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
-            ImageView rdp = (ImageView) mrker.findViewById(R.id.insti_dp);
-            rdp.setImageResource(R.drawable.toilet);
-            LatLng ll = toilets.get(i).loc;
-            MarkerOptions options = new MarkerOptions().title("Toilet").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            mMap.addMarker(options);
+            Log.d("locations details  ",""+locations.get(i).loc);
+            final View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
+            final ImageView rdp = (ImageView) mrker.findViewById(R.id.insti_dp);
+            File localFile = null;
+            try {
+                localFile = File.createTempFile("images", "png");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-            ////////////
-            rdp.setImageResource(R.drawable.trash);
-            ll = garbage.get(i).loc;
-            options = new MarkerOptions().title("Garbage").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            mMap.addMarker(options);
+            final File finalLocalFile = localFile;
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+            final int finalI = i;
+            storageReference.child("display pictures/"+locations.get(i).type+".png").getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(finalLocalFile.getAbsolutePath());
+                    rdp.setImageBitmap(bitmap);
+                    LatLng ll = locations.get(finalI).loc;
+                    MarkerOptions options = new MarkerOptions().title(locations.get(finalI).type).snippet(finalI +"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
+                    mMap.addMarker(options);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
 
-            /////////////
-            rdp.setImageResource(R.drawable.healthcare);
-            ll = healthcare.get(i).loc;
-            options = new MarkerOptions().title("Healthcare").snippet(i+"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            mMap.addMarker(options);
+
         }
         Log.d("firebase checking","Markers are the set");
 
@@ -591,6 +609,81 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     ////////////////////    location listener
+    void locationListenSet()
+    {
+        initializeLocationManager();
+        MapsActivity.LocationListener[] mLocationListeners = new MapsActivity.LocationListener[] {
+                new MapsActivity.LocationListener(LocationManager.GPS_PROVIDER),
+                new MapsActivity.LocationListener(LocationManager.NETWORK_PROVIDER)
+        };
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[1]);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[0]);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
+
+    }
+
+    private void initializeLocationManager() {
+        Log.e(TAG, "initializeLocationManager");
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
+    }
+    public class LocationListener implements android.location.LocationListener
+    {
+        public Location mLastLocation;
+        int i=0;
+
+        public LocationListener(String provider)
+        {
+            Log.e(TAG, "LocationListener " + provider);
+            mLastLocation = new Location(provider);
+
+        }
+
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            cur_location=new LatLng(location.getLatitude(),location.getLongitude());
+            Toast.makeText(MapsActivity.this,"Location changed "+cur_location,LENGTH_LONG).show();
+            setMyMarker(cur_location);
+            retrieveTheNearServices();
+        }
+
+        @Override
+        public void onProviderDisabled(String provider)
+        {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider)
+        {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras)
+        {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
+
+
+    }
 
     public void changeCam(LatLng ll)
     {
