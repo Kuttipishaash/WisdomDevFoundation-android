@@ -14,6 +14,7 @@ public class FeedItem {
     private String link;
     private FeedTitle title;
     private FeedContent content;
+    private FeedExcerpt excerpt;
 
     public class FeedTitle {
         private String rendered;
@@ -30,6 +31,19 @@ public class FeedItem {
         public String getRendered() {
             return fromHtml(rendered).toString();
         }
+    }
+
+    public class FeedExcerpt {
+        private String rendered;
+
+        public String getRendered() {
+            return fromHtml(rendered).toString();
+        }
+    }
+
+
+    public FeedExcerpt getExcerpt() {
+        return excerpt;
     }
 
     public String getDate() {
@@ -57,33 +71,4 @@ public class FeedItem {
         }
     }
 
-    /*
-    private String actualUrl;
-    private String imageUrl;
-    private String shortContent;
-
-    public String getShortContent() {
-        return shortContent;
-    }
-
-    public void setShortContent(String shortContent) {
-        this.shortContent = shortContent;
-    }
-
-    public String getActualUrl() {
-        return actualUrl;
-    }
-
-    public void setActualUrl(String actualUrl) {
-        this.actualUrl = actualUrl;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-*/
 }
