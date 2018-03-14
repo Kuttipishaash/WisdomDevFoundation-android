@@ -9,8 +9,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by praji on 2/22/2018.
@@ -34,17 +44,39 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
 
         TextView mArticleHeading = (TextView) view.findViewById(R.id.text_headline);
         TextView mActualContent = (TextView) view.findViewById(R.id.text_excerpt);
-        ImageView mThumb = (ImageView) view.findViewById(R.id.img_thumb);
+        final ImageView mThumb = (ImageView) view.findViewById(R.id.img_thumb);
         final LinearLayout mShare = (LinearLayout) view.findViewById(R.id.btn_img_share);
 
         FeedItem feedItem = getItem(position);
         mArticleHeading.setText(feedItem.getTitle().getRendered());
         mActualContent.setText(feedItem.getExcerpt().getRendered());
-        /*
-        Glide.with(getContext())
-                .load(feedItem.getImageUrl())
-                .into(mThumb);
-        */
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl("http://wisdominitiatives.org")
+                .addConverterFactory(GsonConverterFactory.create());
+        Retrofit retrofit = builder
+                .client(httpClient.build())
+                .build();
+
+        FeedClient feedClient = retrofit.create(FeedClient.class);
+        Call<FeedImage> imageCall = feedClient.image(feedItem.getFeaturedMedia());
+
+        imageCall.enqueue(new Callback<FeedImage>() {
+            @Override
+            public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
+                FeedImage image = response.body();
+
+                Glide.with(getContext())
+                        .load(image.getGuid().getRendered())
+                        .into(mThumb);
+            }
+
+            @Override
+            public void onFailure(Call<FeedImage> call, Throwable t) {
+                Toast.makeText(getContext(), "Image load failed", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mShare.setOnClickListener(new View.OnClickListener() {
             @Override

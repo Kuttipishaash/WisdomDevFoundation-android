@@ -26,8 +26,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
-
 public class NewsFeedActivity extends AppCompatActivity {
 
     private List<FeedItem> feedItems;
@@ -84,6 +82,7 @@ public class NewsFeedActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<FeedItem>> call, Throwable t) {
+                //TODO: set network handler
                 Toast.makeText(NewsFeedActivity.this, "Failed", Toast.LENGTH_SHORT).show();
             }
         });
@@ -123,8 +122,6 @@ public class NewsFeedActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
     }
 
     //To open the nav drawer when the menu icon on the action bar is tapped
