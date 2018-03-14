@@ -15,6 +15,7 @@ public class FeedItem {
     private FeedTitle title;
     private FeedContent content;
     private FeedExcerpt excerpt;
+    private String featured_media;
 
     public class FeedTitle {
         private String rendered;
@@ -41,9 +42,12 @@ public class FeedItem {
         }
     }
 
-
     public FeedExcerpt getExcerpt() {
         return excerpt;
+    }
+
+    public String getFeaturedMedia() {
+        return featured_media;
     }
 
     public String getDate() {
