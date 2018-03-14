@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -41,10 +42,11 @@
                         android:textSize="25sp" />
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@android:color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
 
@@ -76,11 +78,12 @@
                             android:layout_marginTop="18dp"
                             android:layout_weight="1"
                             android:text="Rating:"
+                            android:textColor="@android:color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <ImageView
-                            android:id="@+id/imageView"
+                            android:id="@+id/rating"
                             android:layout_width="25dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -95,6 +98,7 @@
                 android:layout_height="wrap_content"
                 android:text="Description"
                 android:textAlignment="center"
+                android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
             <HorizontalScrollView
@@ -111,26 +115,47 @@
                     android:scrollbars="horizontal"></LinearLayout>
             </HorizontalScrollView>
 
-            <TextView
+            <android.support.design.widget.CoordinatorLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Comments"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_height="210dp"
+                android:layout_gravity="bottom">
 
-            <ListView
-                android:id="@+id/comments"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:nestedScrollingEnabled="true">
+                <LinearLayout
+                    android:id="@+id/comment_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            </ListView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Comments"
+                        android:textAlignment="center"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <ListView
+                        android:id="@+id/comments"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:nestedScrollingEnabled="true"></ListView>
+
+                </LinearLayout>
+
+                <include
+                    android:id="@+id/add_comment"
+                    layout="@layout/addcomment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    tools:layout_editor_absoluteY="-65dp"></include>
+            </android.support.design.widget.CoordinatorLayout>
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:background="@color/colorPrimary"
                 android:text="Add a comment"
                 android:textColor="@android:color/white" />

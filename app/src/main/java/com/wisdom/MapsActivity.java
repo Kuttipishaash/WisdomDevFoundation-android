@@ -1,17 +1,23 @@
 package com.wisdom;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,11 +25,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,6 +44,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,6 +55,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +69,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.hsalf.smilerating.SmileRating;
 import com.mahc.custombottomsheetbehavior.BottomSheetBehaviorGoogleMapsLike;
+import com.mahc.custombottomsheetbehavior.MergedAppBarLayout;
+import com.mahc.custombottomsheetbehavior.MergedAppBarLayoutBehavior;
 
 import org.json.JSONObject;
 
@@ -81,45 +97,40 @@ import static android.widget.Toast.LENGTH_LONG;
  * Created by User on 22-Feb-18.
  */
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     public LocationManager mLocationManager = null;
     SupportMapFragment  mapFragment;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
-    BottomSheetBehavior<View> mBottomSheetBehavior1;
     String cur_typ;
+    FloatingActionButton home_gps;
     ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
     ArrayList<Integer> upr_activities=new ArrayList<Integer>();
-
+    Polyline polylines;
+    Marker my_marker=null;
     LatLng cur_location=null;
     LatLng destination=null;
     ArrayList<Institution> toilets=new ArrayList<Institution>();
     ArrayList<Institution> garbage=new ArrayList<Institution>();
     ArrayList<Institution> healthcare=new ArrayList<Institution>();
     ArrayList<Locations> locations=new ArrayList<Locations>();
+    BottomSheetBehavior<View> mBottomSheetBehavior1;
+    boolean bs_up;
     View bottomSheet;
-    String[] person_name={"Kuttapan","Shaji","Bilal","Jose","Prabhakaran","Romy","Enthiran","Tonikutan"};
-    String[] person_comment={"Havent seen such a beutiful place",
-                             "Top notch all the way",
-                            "Cant believe how come everbody here is so nice",
-                            "Found a dead cockroach inside there...",
-                            "One of immemorable experience in my life","Want to visit again",
-                            "Loved this place...",
-                            "Worth visiting",
-                            "Great service..",
-                            "Everyone should visit here once in life",
-                            "liked so much <3 <3"};
-    String[] dp_name={"a","b","c","d","e","f","g"};
-    Marker my_marker=null;
-    Institution one,two,three;
+     Institution one,two,three;
     CommentAdapter commentLister = null;
     GoogleMap mMap=null,statmMap;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        startService(new Intent(getBaseContext(), LocationService.class));
+       // startService(new Intent(getBaseContext(), LocationService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         locationListenSet();
+        polylines=null;
+        registerInternetCheckReceiver();
+        bottomSheetSetup();
+        //home_gps=(FloatingActionButton)findViewById(R.id.gps_home);
         final SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
         final ProgressDialog progressBar = new ProgressDialog(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -140,168 +151,131 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("firebase checking","yaa fine");
             }
         }).start();
-
-        Button intnt_btn=(Button)findViewById(R.id.intnt_btn);
-        intnt_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MapsActivity.this,NewsFeedActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
     }
+
+    private void registerInternetCheckReceiver() {
+        IntentFilter internetFilter = new IntentFilter();
+        internetFilter.addAction("android.net.wifi.STATE_CHANGE");
+        internetFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(broadcastReceiver, internetFilter);
+    }
+
+    /**
+     *  Runtime Broadcast receiver inner class to capture internet connectivity events
+     */
+    boolean connctn=false;
+    Snackbar snackbar=null;
+    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @SuppressLint("ResourceType")
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cm =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+            if (isConnected) {
+                try {
+                    if(connctn==false) {
+                        if(snackbar!=null)
+                            snackbar.dismiss();
+                        snackbar = Snackbar
+                                .make(findViewById(R.id.coordinatorlayout), "Connected", Snackbar.LENGTH_SHORT);
+                        snackbar.setActionTextColor(Color.RED);
+
+                        View sbView = snackbar.getView();
+                        sbView.setBackgroundColor(ContextCompat.getColor(MapsActivity.this,Color.GREEN));
+                        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                        textView.setTextColor(Color.YELLOW);
+                        snackbar.show();
+
+                    }
+                    connctn=true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(context, "Network is changed or reconnected", Toast.LENGTH_LONG).show();
+                try {
+                    connctn=false;
+
+                    snackbar = Snackbar
+                            .make(findViewById(R.id.coordinatorlayout), "Cant connect to Wisdom network", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setActionTextColor(Color.RED);
+
+                    View sbView = snackbar.getView();
+                    sbView.setBackgroundColor(ContextCompat.getColor(MapsActivity.this,Color.RED));
+                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(Color.YELLOW);
+                    snackbar.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    };
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         Toast.makeText(this,"map ready",LENGTH_LONG).show();
         mMap = googleMap;
         statmMap = mMap;
         //setMyMarker(cur_location);
-        drawRoute();
-        bottomSheet = (View)findViewById(R.id.btm_sheet);
-        final BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
-        mBottomSheetBehavior1.setPeekHeight(0);
-        mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    // mBottomSheetBehavior1.setPeekHeight(bottomSheet.getHeight());
-                    mBottomSheetBehavior1.setPeekHeight(0);
-                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    mBottomSheetBehavior1.setPeekHeight(0);
-                }
-            }
-
-            @Override
-            public void onSlide(View bottomSheet, float slideOffset) {
-
-            }
-        });
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+      //  drawRoute();
+    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                BottomSheetBehavior mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
-                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                final View bottomSheet = findViewById(R.id.btm_sheet);
-                TextView address=(TextView)bottomSheet.findViewById(R.id.address_name);
-                address.setSelected(true);
-                TextView type=(TextView)bottomSheet.findViewById(R.id.type);
-                LinearLayout imgs=(LinearLayout)bottomSheet.findViewById(R.id.imgs);
+                bs_up=true;
+                //home_gps.setImageResource(R.drawable.toilet);
+                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
+                Button moredetails=(Button)findViewById(R.id.moredetails);
 
-                SmileRating sr=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
-                sr.setClickable(false);
-                String imageName = "";
-                Button addcomnt=(Button)bottomSheet.findViewById(R.id.button2);
-                ListView comments=(ListView)bottomSheet.findViewById(R.id.comments);
-                addcomnt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                            View btm_review=(View)findViewById(R.id.btm_review);
-                            btm_review.setVisibility(View.VISIBLE);
-                            View btm_sheet=(View)findViewById(R.id.btm_sheet);
-                            btm_sheet.setVisibility(View.INVISIBLE);
-                    }
-                });
-                if(marker.getTitle().equals("Toilet"))
-                {
-                    cur_typ="T";
-                    imageName="toilet";
-                    address.setText(toilets.get(Integer.parseInt(marker.getSnippet())).address);
-                    type.setText(marker.getTitle());
-                    sr.setSelectedSmile(healthcare.get(Integer.parseInt(marker.getSnippet())).rate);
-                    for(int i=0;i<4;++i)
-                    {
-                        Institution.CommentsRating one=new Institution.CommentsRating();
-                        one.name=person_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 10)];
-                        one.dp=dp_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        toilets.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
-                    }
-                    commentLister=new CommentAdapter(MapsActivity.this,toilets.get(Integer.parseInt(marker.getSnippet())).cmmnts);
-                    comments.setAdapter(commentLister);
-
-                }
-                else if(marker.getTitle().equals("Garbage"))
-                {
-                    cur_typ="G";
-                    imageName="garbage";
-                    address.setText(garbage.get(Integer.parseInt(marker.getSnippet())).address);
-                    type.setText(marker.getTitle());
-                    sr.setSelectedSmile(healthcare.get(Integer.parseInt(marker.getSnippet())).rate);
-                    for(int i=0;i<4;++i)
-                    {
-                        Institution.CommentsRating one=new Institution.CommentsRating();
-                        one.name=person_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 10)];
-                        one.dp=dp_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        garbage.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
-                    }
-                    commentLister=new CommentAdapter(MapsActivity.this,garbage.get(Integer.parseInt(marker.getSnippet())).cmmnts);
-                    comments.setAdapter(commentLister);
-                }
-                else if(marker.getTitle().equals("Healthcare"))
-                {
-                    cur_typ="H";
-                    imageName="healthclinic";
-                    address.setText(healthcare.get(Integer.parseInt(marker.getSnippet())).address);
-                    type.setText(marker.getTitle());
-                    for(int i=0;i<4;++i)
-                    {
-                        Institution.CommentsRating one=new Institution.CommentsRating();
-                        one.name=person_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        one.comment=person_comment[ThreadLocalRandom.current().nextInt(0, 10)];
-                        one.dp=dp_name[ThreadLocalRandom.current().nextInt(0, 7)];
-                        healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
-                    }
-                    commentLister=new CommentAdapter(MapsActivity.this,healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts);
-                    comments.setAdapter(commentLister);
-                    sr.setSelectedSmile(healthcare.get(Integer.parseInt(marker.getSnippet())).rate);
-                }
-
-                for(int i=0;i<4;i++)
-                {
-                    LayoutInflater inflater =(LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    View rView = inflater.inflate(R.layout.insti_btm_sheet_imgs, null);
-                    int resID = getResources().getIdentifier(imageName+ ThreadLocalRandom.current().nextInt(1, 8 + 1)
-,"drawable", "com.wisdom");
-                    ImageView image=(ImageView)rView.findViewById(R.id.insti_img);
-                    image.setImageResource(resID );
-                    imgs.addView(rView);
-                }
-
-                /////////////////////////////
-                Button setcomnt=(Button)bottomSheet.findViewById(R.id.frag_done);
-                setcomnt.setOnClickListener(new View.OnClickListener() {
+                moredetails.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        EditText commnt=(EditText)bottomSheet.findViewById(R.id.editText2);
-                        SmileRating rating=(SmileRating)bottomSheet.findViewById(R.id.smile_rating);
-                        int rate=rating.getRating();
-                        String comment=commnt.getText().toString();
-                        Institution.CommentsRating one=new Institution.CommentsRating();
-                        one.rate=rate;
-                        one.comment=comment;
-                        if(cur_typ.equals("T"))
-                            toilets.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
-                        else if(cur_typ.equals("G"))
-                            garbage.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
-                        else if(cur_typ.equals("H"))
-                            healthcare.get(Integer.parseInt(marker.getSnippet())).cmmnts.add(one);
-                        commentLister.notifyDataSetChanged();
-                        View btm_review=(View)findViewById(R.id.btm_review);
-                        btm_review.setVisibility(View.INVISIBLE);
-                        View btm_sheet=(View)findViewById(R.id.btm_sheet);
-                        btm_sheet.setVisibility(View.VISIBLE);
+                        Intent intent=new Intent(MapsActivity.this,LocationDetailer.class);
+                        intent.putExtra("loc num",locations.get(Integer.parseInt(marker.getSnippet())).num);
+                        intent.putExtra("loc type",marker.getTitle());
+                        intent.putExtra("loc tot_comments",locations.get(Integer.parseInt(marker.getSnippet())).tot_comments);
+                        intent.putExtra("loc name",locations.get(Integer.parseInt(marker.getSnippet())).name);
+                        intent.putExtra("loc rating",locations.get(Integer.parseInt(marker.getSnippet())).rating);
+                        intent.putExtra("loc address",locations.get(Integer.parseInt(marker.getSnippet())).address);
+                        startActivity(intent);
                     }
                 });
+                TextView addrss_tv=(TextView)findViewById(R.id.bs_address_name);
+                TextView type_tv=(TextView)findViewById(R.id.bs_type);
+                TextView name_tv=(TextView)findViewById(R.id.bs_address_name);
+                ImageView rating_iv=(ImageView)findViewById(R.id.bs_rating);
+                addrss_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).address);
+                type_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).type);
+                name_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).name);
+                String rate_name = "";
+                switch (locations.get(Integer.parseInt(marker.getSnippet())).rating)
+                {
+                    case 1:     rate_name="terrible";
+                        break;
 
+                    case 2:     rate_name="bad";
+                        break;
 
+                    case 3:     rate_name="okay";
+                        break;
 
+                    case 4:     rate_name="good";
+                        break;
+
+                    case 5:     rate_name="great";
+                        break;
+                }
+                String uri = "@drawable/";  // where myresource (without the extension) is the file
+
+                int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                ImageView imageview= (ImageView)findViewById(R.id.bs_rating);
+                Drawable drawable = getResources().getDrawable(getResources().getIdentifier(rate_name, "drawable", getPackageName()));
+                imageview.setImageDrawable(drawable);
                 return false;
             }
         });
@@ -332,7 +306,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             loctn.address=ds.child("address").getValue().toString();
                             loctn.name=ds.child("name").getValue().toString();
                             loctn.rating=Integer.parseInt(ds.child("rating").getValue().toString());
-
+                            locations.add(loctn);
                             myRef.child("Comments").child(loctn.num+"").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot)
@@ -341,7 +315,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         loctn.tot_comments=0;
                                     else
                                         loctn.tot_comments=(int) dataSnapshot.getChildrenCount();
-                                    locations.add(loctn);
                                 }
                                 @Override
                                 public void onCancelled(DatabaseError error) {
@@ -356,6 +329,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onCancelled(DatabaseError error) {
                         // Failed to read value
+                        Log.w(TAG, "Failed to read value.", error.toException());
                         Log.w(TAG, "Failed to read value.", error.toException());
                     }
                 });
@@ -379,14 +353,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     void drawRoute()
     {
-        //String url = getDirectionsUrl(cur_location,destination);
+        //String url = getDirectionsUrl(cur_location,destinatilon);
         String url = getDirectionsUrl(cur_location,destination);
         DownloadTask downloadTask = new DownloadTask();
         downloadTask.execute(url);
     }
     private String getDirectionsUrl(LatLng origin,LatLng dest){
         origin=new LatLng(9.993421,76.358412);
-        dest=new LatLng(10.033090,76.295216);
+        dest=new LatLng(10.074493,76.298345);
         // Origin of route
         String str_origin = "origin="+origin.latitude+","+origin.longitude;
 
@@ -534,7 +508,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             // Drawing polyline in the Google Map for the i-th route
-            mMap.addPolyline(lineOptions);
+            polylines=mMap.addPolyline(lineOptions);
+
         }
     }
 
@@ -581,6 +556,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
        void setMyMarker(final LatLng loc)
        {
+           if(my_marker!=null)
+               my_marker.remove();
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
             final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
@@ -588,7 +565,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             rdp.setImageBitmap(icon);
             LatLng ll = new LatLng(loc.latitude,loc.longitude);
             MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            mMap.addMarker(options);
+            my_marker=mMap.addMarker(options);
            changeCam(loc);
 
        }
@@ -689,6 +666,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         CameraUpdate location= CameraUpdateFactory.newLatLngZoom(ll,15);
         mMap.animateCamera(location);
+
+    }
+    private void bottomSheetSetup(){
+        bottomSheet = findViewById(R.id.btm_sheet);
+        mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior1.setPeekHeight(0);
+        mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    // mBottomSheetBehavior1.setPeekHeight(bottomSheet.getHeight());
+                    mBottomSheetBehavior1.setPeekHeight(0);
+                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                }
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    mBottomSheetBehavior1.setPeekHeight(0);
+                    polylines.remove();
+                    home_gps.setImageResource(R.drawable.gps_home);
+                }
+            }
+
+            @Override
+            public void onSlide(View bottomSheet, float slideOffset) {
+
+            }
+        });
+
 
     }
 }

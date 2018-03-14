@@ -1,5 +1,7 @@
 package com.wisdom;
 
+import android.graphics.Bitmap;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -10,9 +12,11 @@ public class Locations {
     LatLng loc;
     String type,name,address;
     int num,rating,tot_comments;
-    class Comments
+    static class Comments
     {
-        String uid;
+      //  String uid;
+        String name;
+        String dp;
         String rating;
         String text;
     }

@@ -6,7 +6,7 @@
 
     <ImageView
         android:id="@+id/insti_dp"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:srcCompat="@android:color/transparent" />
 </RelativeLayout>
