@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wisdom">
 
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,22 +17,30 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".NewsFeedActivity"
+        <activity
+            android:name=".NewsFeedActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".IntroActivity" />
         <activity android:name=".ViewNewsActivity" />
-        <activity android:name=".MapsActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-        </activity>
-        <service android:name=".LocationService" android:process=":my_service" />
-        <activity android:name=".ContactUsActivity"/>
+        <activity
+            android:name=".MapsActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
+        <service
+            android:name=".LocationService"
+            android:process=":my_service" />
 
+        <activity android:name=".ContactUsActivity" />
+        <activity
+            android:name=".NewsViewActivity"
+            android:label="@string/title_activity_news_view"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
