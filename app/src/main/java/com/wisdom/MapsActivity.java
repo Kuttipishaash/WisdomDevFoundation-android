@@ -376,7 +376,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void setInstiMarker()
     {
-        final LinearLayout loading=(LinearLayout)findViewById(R.id.loading);
+        final View loading=findViewById(R.id.loading);
         loading.setVisibility(View.VISIBLE);
         int i=0;
         Log.d("location size= ",locations.size()+"");

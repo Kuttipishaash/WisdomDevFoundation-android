@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
@@ -71,6 +72,7 @@ public class LocationDetailer extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        my_comment=new Locations.Comments();
         setContentView(R.layout.bottom_sheet_content);
         Bundle extras = getIntent().getExtras();
         uid="1";
@@ -102,45 +104,57 @@ public class LocationDetailer extends AppCompatActivity
                             @Override
                             public void onClick(View v)
                             {
-                                final ProgressBar progressBar=findViewById(R.id.comment_progress);
-                                progressBar.setVisibility(View.VISIBLE);
                                 EditText comment=(EditText)addcomment.findViewById(R.id.editText2);
                                 SmileRating sr=(SmileRating)addcomment.findViewById(R.id.smile_rating);
-                                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                final DatabaseReference myRef = database.getReference("");
-                                myRef.child("Comments").child(num+"").child(uid).child("text").setValue(comment.getText().toString());
-                                myRef.child("Comments").child(num+"").child(uid).child("rating").setValue(sr.getRating());
-                                myRef.child("Comments").child(num+"").child(uid).child("person").setValue(uid);
-                                myRef.child("Comments").child(num+"").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot)
-                                    {
-                                        int i=0;
-                                        float sum=0,avg;
-                                        final DataSnapshot finds=dataSnapshot;
-                                        for(final DataSnapshot ds:dataSnapshot.getChildren())
-                                        {
-                                            ++i;
-                                            sum+=Integer.parseInt(ds.child("rating").getValue().toString());
+                                if(comment.getText().toString().equals(""))
+                                {
+                                    Toast.makeText(LocationDetailer.this,"Enter a comment",Toast.LENGTH_LONG).show();
+                                }
+                                else if(!sr.isSelected())
+                                {
+                                    Toast.makeText(LocationDetailer.this,"Rate us how you feel",Toast.LENGTH_LONG).show();
+                                }
+                                else {
+                                    Toast.makeText(LocationDetailer.this,"Thank you",Toast.LENGTH_LONG).show();
+
+                                    final ProgressBar progressBar = findViewById(R.id.comment_progress);
+                                    progressBar.setVisibility(View.VISIBLE);
+
+                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    final DatabaseReference myRef = database.getReference("");
+                                    myRef.child("Comments").child(num + "").child(uid).child("text").setValue(comment.getText().toString());
+                                    myRef.child("Comments").child(num + "").child(uid).child("rating").setValue(sr.getRating());
+                                    myRef.child("Comments").child(num + "").child(uid).child("person").setValue(uid);
+                                    myRef.child("Comments").child(num + "").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            int i = 0;
+                                            float sum = 0, avg;
+                                            final DataSnapshot finds = dataSnapshot;
+                                            for (final DataSnapshot ds : dataSnapshot.getChildren()) {
+                                                ++i;
+                                                sum += Integer.parseInt(ds.child("rating").getValue().toString());
+                                            }
+                                            avg = sum / i;
+                                            avg = (float) (avg + 0.5);
+                                            int rate = (int) avg;
+                                            myRef.child("Locations").child(num + "").child("rating").setValue(rate);
+                                            commenting = false;
+                                            addcomment.setVisibility(View.INVISIBLE);
+                                            commentlist.setVisibility(View.VISIBLE);
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            comments = new ArrayList<Locations.Comments>();
+                                            commentAdapter.notifyDataSetChanged();
+                                            setComments();
                                         }
-                                        avg=sum/i;
-                                        avg= (float) (avg+0.5);
-                                        int rate= (int) avg;
-                                        myRef.child("Locations").child(num+"").child("rating").setValue(rate);
-                                        commenting=false;
-                                        addcomment.setVisibility(View.INVISIBLE);
-                                        commentlist.setVisibility(View.VISIBLE);
-                                        progressBar.setVisibility(View.INVISIBLE);
-                                        comments=new ArrayList<Locations.Comments>();
-                                        commentAdapter.notifyDataSetChanged();
-                                        setComments();
-                                    }
-                                    @Override
-                                    public void onCancelled(DatabaseError error) {
-                                        // Failed to read value
-                                        Log.w(TAG, "Failed to read value.", error.toException());
-                                    }
-                                });
+
+                                        @Override
+                                        public void onCancelled(DatabaseError error) {
+                                            // Failed to read value
+                                            Log.w(TAG, "Failed to read value.", error.toException());
+                                        }
+                                    });
+                                }
                             }
                         });
                         commentlist.setVisibility(View.INVISIBLE);
@@ -151,11 +165,13 @@ public class LocationDetailer extends AppCompatActivity
                             comment.setText(my_comment.text);
                             sr.setSelectedSmile(my_comment.rating);
                         }
+
                     }
                     else
                     {
                        commenting=true;
                     }
+
 
             }
         });
@@ -228,11 +244,11 @@ public class LocationDetailer extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                    if(dataSnapshot!=null)
+                    if(dataSnapshot.child("text").getValue()!=null)
                     {
                         commented=true;
                         my_comment.text=dataSnapshot.child("text").getValue().toString();
-                        my_comment.rating=Integer.parseInt(dataSnapshot.child("rating").getValue().toString());
+                        my_comment.rating=Integer.parseInt(dataSnapshot.child("rating").getValue().toString())-1;
                         button.setText("Edit Comment");
                     }
             }
