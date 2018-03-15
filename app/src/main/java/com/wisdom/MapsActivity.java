@@ -124,7 +124,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-       // startService(new Intent(getBaseContext(), LocationService.class));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         locationListenSet();
