@@ -17,7 +17,7 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout_view_news"
             android:layout_width="match_parent"
-            android:background="@color/md_red_900"
+            android:background="@color/colorPrimaryDark"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"

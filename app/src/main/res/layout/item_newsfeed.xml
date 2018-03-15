@@ -47,11 +47,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:textColor="@color/md_black_1000"
                     android:ellipsize="end"
                     android:maxLength="100"
                     android:maxLines="2"
-                    android:text="Download URL" />
+                    android:text="Download URL"
+                    android:textColor="@color/md_black_1000" />
 
             </LinearLayout>
 
@@ -141,6 +141,12 @@
             </LinearLayout>
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@color/colorPrimaryDark"></View>
     </LinearLayout>
 
 
