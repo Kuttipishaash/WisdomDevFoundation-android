@@ -8,7 +8,7 @@
     tools:context="com.wisdom.NewsViewActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+        android:id="@+id/app_bar_news_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
@@ -17,6 +17,7 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout_view_news"
             android:layout_width="match_parent"
+            android:background="@color/md_red_900"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
@@ -40,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@id/app_bar"
+        app:layout_anchor="@id/app_bar_news_view"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_share_black" />
 
