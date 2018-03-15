@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,110 +8,122 @@
     android:orientation="vertical">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="125dp"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/address_name"
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:layout_weight="1"
-                android:background="#22313f"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:text="TextView"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
-
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="20dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/type"
-                android:layout_width="match_parent"
-                android:layout_height="42.79dp"
-                android:layout_weight="1"
-                android:background="@color/fui_bgFacebook"
-                android:textColor="@android:color/white"
-                android:textSize="22sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="1dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:layout_weight="1"
-                    android:text="Rating:"
-                    android:textColor="@android:color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:id="@+id/rating"
-                    android:layout_width="25dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/great" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/description"
+    <RelativeLayout
+        android:id="@+id/detail_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Description"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:background="@color/colorPrimaryDark"
+        android:orientation="horizontal">
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:visibility="visible">
+        <TextView
+            android:id="@+id/address_name"
+            android:layout_width="220dp"
+            android:layout_height="55dp"
+            android:background="@color/colorPrimaryDark"
+            android:ellipsize="marquee"
+            android:gravity="center_vertical"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="TextView"
+            android:paddingLeft="15dp"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="125dp"
+            android:layout_height="55dp"
+            android:text="Type"
+            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:background="@color/fui_bgFacebook"
+            android:paddingLeft="15dp"
+            android:textColor="@android:color/white"
+            android:textSize="22sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/namerating"
+        android:layout_width="wrap_content"
+        android:layout_height="75dp"
+        android:layout_below="@id/detail_header"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Name"
+            android:paddingLeft="15dp"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <LinearLayout
-            android:id="@+id/imgs"
-            android:layout_width="wrap_content"
+            android:id="@+id/rating_all"
+            android:layout_width="150dp"
             android:layout_height="100dp"
-            android:isScrollContainer="true"
-            android:orientation="horizontal"
-            android:scrollbars="horizontal"></LinearLayout>
-    </HorizontalScrollView>
+            android:layout_alignEnd="@+id/name"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Rating:"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/rating"
+                android:layout_width="15dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/great" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_below="@+id/namerating"
+        android:orientation="vertical"
+        android:background="@color/md_white_1000"
+        android:layout_height="100dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Content_Content"
+            android:textAlignment="center"
+            android:textColor="@color/md_black_1000"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
     <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/md_white_1000"
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
             android:id="@+id/comment_list"
@@ -131,7 +143,7 @@
             <ListView
                 android:id="@+id/comments"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="220dp"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="2dp"></ListView>
 
@@ -139,7 +151,7 @@
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
+                android:background="@color/colorPrimaryDark"
                 android:text="Add a comment"
                 android:textColor="@android:color/white" />
 
@@ -151,10 +163,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="150dp"
-            android:layout_marginTop="100dp"
+            android:layout_gravity="center"
             android:visibility="visible" />
-
 
         <include
             android:id="@+id/add_comment"
@@ -164,9 +174,8 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="30dp"
             android:visibility="invisible"
+            app:layout_anchorGravity="right|center"
             tools:layout_editor_absoluteY="-65dp"></include>
-
-
     </android.support.design.widget.CoordinatorLayout>
 
-   </LinearLayout>
+</RelativeLayout>

@@ -376,8 +376,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void setInstiMarker()
     {
-        final View loading=findViewById(R.id.loading);
-        loading.setVisibility(View.VISIBLE);
+      //  final View loading=findViewById(R.id.loading);
+       // loading.setVisibility(View.VISIBLE);
         int i=0;
         Log.d("location size= ",locations.size()+"");
 
@@ -407,7 +407,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMarker=mMap.addMarker(options);
                     if(finalI1 ==locations.size()-1)
                     {
-                        loading.setVisibility(View.INVISIBLE);
+                  //      loading.setVisibility(View.INVISIBLE);
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {

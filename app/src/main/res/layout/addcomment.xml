@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/fui_bgPhone"
+    android:background="@color/md_white_1000"
     android:orientation="vertical">
 
     <TextView
@@ -35,7 +35,8 @@
         android:id="@+id/entercomment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/md_green_800"
+        android:textColor="@color/md_white_1000"
+        android:background="@color/colorPrimaryDark"
         android:text="comment" />
 
 </LinearLayout>
