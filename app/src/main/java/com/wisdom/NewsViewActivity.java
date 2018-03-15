@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
@@ -54,8 +55,12 @@ public class NewsViewActivity extends AppCompatActivity {
         imageCall.enqueue(new Callback<FeedImage>() {
             @Override
             public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
-                Glide.with(NewsViewActivity.this)
+                Glide
+                        .with(NewsViewActivity.this)
                         .load(response.body().getGuid().getRendered())
+                        .apply(new RequestOptions()
+                                .centerCrop()
+                        )
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
@@ -74,8 +79,7 @@ public class NewsViewActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
             }
         });
     }
