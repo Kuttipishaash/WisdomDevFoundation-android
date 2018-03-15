@@ -1,5 +1,6 @@
 package com.wisdom;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,12 +30,19 @@ public class NewsViewActivity extends AppCompatActivity {
     TextView mArticleContent;
     CollapsingToolbarLayout mToolbarLayout;
 
+    String articleHeading;
+    String articleLink;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_view);
+
+        articleHeading = getIntent().getStringExtra("articleHeading");
+        articleLink = getIntent().getStringExtra("articleLink");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_view_news);
-        toolbar.setTitle(getIntent().getStringExtra("articleHeading"));
+        toolbar.setTitle(articleHeading);
         setSupportActionBar(toolbar);
 
         mToolbarLayout = findViewById(R.id.toolbar_layout_view_news);
@@ -79,7 +87,12 @@ public class NewsViewActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String shareContent;
+                shareContent = "Check out this article: \n" + articleHeading + "\n" + articleLink + "\nShared from Wisdom Foundation";
+                Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+                startActivity(Intent.createChooser(shareIntent, "Share article with "));
             }
         });
     }

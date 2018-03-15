@@ -75,6 +75,7 @@ public class NewsFeedActivity extends AppCompatActivity {
                         Intent intent = new Intent(NewsFeedActivity.this, NewsViewActivity.class);
                         intent.putExtra("articleHeading", item.getTitle().getRendered());
                         intent.putExtra("articleContent", item.getContent().getRendered());
+                        intent.putExtra("articleLink", item.getLink());
                         intent.putExtra("articleImageId", item.getFeaturedMedia());
                         startActivity(intent);
                     }
