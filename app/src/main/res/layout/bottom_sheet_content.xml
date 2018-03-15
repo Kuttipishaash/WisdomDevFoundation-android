@@ -1,166 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="125dp"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/address_name"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_weight="1"
+                android:background="#22313f"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="TextView"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/type"
+                android:layout_width="match_parent"
+                android:layout_height="42.79dp"
+                android:layout_weight="1"
+                android:background="@color/fui_bgFacebook"
+                android:textColor="@android:color/white"
+                android:textSize="22sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="125dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="1dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="Rating:"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/address_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="25dp"
-                        android:layout_weight="1"
-                        android:background="#22313f"
-                        android:ellipsize="marquee"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="TextView"
-                        android:textColor="@android:color/white"
-                        android:textSize="25sp" />
-
-                    <TextView
-                        android:id="@+id/name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black"
-                        android:textSize="20sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="20dp"
-                    android:layout_height="match_parent"
+                <ImageView
+                    android:id="@+id/rating"
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/type"
-                        android:layout_width="match_parent"
-                        android:layout_height="42.79dp"
-                        android:layout_weight="1"
-                        android:background="@color/fui_bgFacebook"
-                        android:textColor="@android:color/white"
-                        android:textSize="22sp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="1dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="18dp"
-                            android:layout_weight="1"
-                            android:text="Rating:"
-                            android:textColor="@android:color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <ImageView
-                            android:id="@+id/rating"
-                            android:layout_width="25dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            app:srcCompat="@drawable/great" />
-                    </LinearLayout>
-                </LinearLayout>
+                    app:srcCompat="@drawable/great" />
             </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/imgs"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:isScrollContainer="true"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal"></LinearLayout>
+    </HorizontalScrollView>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom">
+
+        <LinearLayout
+            android:id="@+id/comment_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Description"
+                android:text="Comments"
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-            <HorizontalScrollView
+
+            <ListView
+                android:id="@+id/comments"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:visibility="visible">
-
-                <LinearLayout
-                    android:id="@+id/imgs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="100dp"
-                    android:isScrollContainer="true"
-                    android:orientation="horizontal"
-                    android:scrollbars="horizontal"></LinearLayout>
-            </HorizontalScrollView>
-
-            <android.support.design.widget.CoordinatorLayout
-                android:layout_width="match_parent"
-                android:layout_height="210dp"
-                android:layout_gravity="bottom">
-
-                <LinearLayout
-                    android:id="@+id/comment_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Comments"
-                        android:textAlignment="center"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <ListView
-                        android:id="@+id/comments"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:nestedScrollingEnabled="true"></ListView>
-
-                </LinearLayout>
-
-                <include
-                    android:id="@+id/add_comment"
-                    layout="@layout/addcomment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    tools:layout_editor_absoluteY="-65dp"></include>
-            </android.support.design.widget.CoordinatorLayout>
+                android:layout_height="200dp"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="2dp"></ListView>
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
                 android:background="@color/colorPrimary"
                 android:text="Add a comment"
                 android:textColor="@android:color/white" />
 
         </LinearLayout>
-    </ScrollView>
 
-</LinearLayout>
+        <ProgressBar
+            android:id="@+id/comment_progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="100dp"
+            android:visibility="visible" />
+
+
+        <include
+            android:id="@+id/add_comment"
+            layout="@layout/addcomment"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="30dp"
+            android:visibility="invisible"
+            tools:layout_editor_absoluteY="-65dp"></include>
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+   </LinearLayout>

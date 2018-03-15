@@ -29,7 +29,7 @@ import static android.content.ContentValues.TAG;
 
 public class CommentAdapter extends BaseAdapter {
     ArrayList<Locations.Comments> commnts;
-    String[] reaction={"good","great","okay","bad","terrible"};
+    String[] reaction={"terrible","bad","okay","good","great"};
     Context context;
     LayoutInflater inflater=null;
 CommentAdapter(Context context, ArrayList<Locations.Comments> commnts)
@@ -66,9 +66,10 @@ CommentAdapter(Context context, ArrayList<Locations.Comments> commnts)
         name.setText(commnts.get(position).name);
         comment.setText(commnts.get(position).text);
         ImageView reactn=(ImageView)view.findViewById(R.id.reaction);
-        int resID = context.getResources().getIdentifier(commnts.get(position).rating
+        int resID = context.getResources().getIdentifier(reaction[commnts.get(position).rating-1]
                 ,"drawable", "com.wisdom");
         reactn.setImageResource(resID );
+
         return view;
     }
 }

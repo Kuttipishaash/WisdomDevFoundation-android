@@ -120,6 +120,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      Institution one,two,three;
     CommentAdapter commentLister = null;
     GoogleMap mMap=null,statmMap;
+    int current_i;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,9 +131,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         polylines=null;
         registerInternetCheckReceiver();
         bottomSheetSetup();
-        //home_gps=(FloatingActionButton)findViewById(R.id.gps_home);
+        home_gps=(FloatingActionButton)findViewById(R.id.gps_home);
         final SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
         final ProgressDialog progressBar = new ProgressDialog(this);
+        registerInternetCheckReceiver();
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -224,14 +226,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         statmMap = mMap;
         //setMyMarker(cur_location);
       //  drawRoute();
+        home_gps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(bs_up==false)
+                {
+                    if (cur_location != null)
+                    {
+                        CameraUpdate location=CameraUpdateFactory.newLatLngZoom(cur_location,15);
+                        mMap.animateCamera(location);
+                    }
+                }
+                else
+                {
+                    drawRoute();
+                }
+            }
+        });
     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 bs_up=true;
+                if(polylines!=null)
+                    polylines.remove();
+                current_i=Integer.parseInt(marker.getSnippet());
                 //home_gps.setImageResource(R.drawable.toilet);
                 mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
                 Button moredetails=(Button)findViewById(R.id.moredetails);
-
+                home_gps.setImageResource(R.drawable.navigation);
                 moredetails.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -359,11 +381,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         downloadTask.execute(url);
     }
     private String getDirectionsUrl(LatLng origin,LatLng dest){
-        origin=new LatLng(9.993421,76.358412);
-        dest=new LatLng(10.074493,76.298345);
+        origin=new LatLng(cur_location.latitude,cur_location.longitude);
+        dest=new LatLng(locations.get(current_i).loc.latitude,locations.get(current_i).loc.longitude);
         // Origin of route
+        LatLng midpoint=new LatLng((locations.get(current_i).loc.latitude+cur_location.latitude)/2,(locations.get(current_i).loc.longitude+cur_location.longitude)/2);
+        CameraUpdate location=CameraUpdateFactory.newLatLngZoom(midpoint,11);
+        mMap.animateCamera(location);
         String str_origin = "origin="+origin.latitude+","+origin.longitude;
-
         // Destination of route
         String str_dest = "destination="+dest.latitude+","+dest.longitude;
 
@@ -509,6 +533,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Drawing polyline in the Google Map for the i-th route
             polylines=mMap.addPolyline(lineOptions);
+
 
         }
     }
@@ -684,7 +709,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     mBottomSheetBehavior1.setPeekHeight(0);
-                    polylines.remove();
+                    bs_up=false;
+                    if(polylines!=null)
+                        polylines.remove();
+                    polylines=null;
                     home_gps.setImageResource(R.drawable.gps_home);
                 }
             }

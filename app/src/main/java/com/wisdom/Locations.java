@@ -17,7 +17,7 @@ public class Locations {
       //  String uid;
         String name;
         String dp;
-        String rating;
+        int rating;
         String text;
     }
 }

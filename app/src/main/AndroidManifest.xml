@@ -31,10 +31,8 @@
             android:name=".MapsActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
-        <service
-            android:name=".LocationService"
-            android:process=":my_service" />
-
+        <activity android:name=".LocationDetailer"
+            android:label="Details"/>
         <activity android:name=".ContactUsActivity"
             android:label="Contact Us"/>
         <activity android:name=".AboutUsActivity"
