@@ -224,20 +224,16 @@ public class LocationDetailer extends AppCompatActivity
         final Button button=(Button)findViewById(R.id.button2);
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
-        myRef.child("Comments").child(num+"").addValueEventListener(new ValueEventListener() {
+        myRef.child("Comments").child(num+"").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                    for(DataSnapshot ds:dataSnapshot.getChildren())
+                    if(dataSnapshot!=null)
                     {
-                        if(ds.child("person").getValue().toString().equals(uid))
-                        {
-                            commented=true;
-                            my_comment.text=ds.child("uid").getValue().toString();
-                            my_comment.rating=Integer.parseInt(ds.child("uid").getValue().toString());
-                            button.setText("Edit Comment");
-                            break;
-                        }
+                        commented=true;
+                        my_comment.text=dataSnapshot.child("text").getValue().toString();
+                        my_comment.rating=Integer.parseInt(dataSnapshot.child("rating").getValue().toString());
+                        button.setText("Edit Comment");
                     }
             }
             @Override

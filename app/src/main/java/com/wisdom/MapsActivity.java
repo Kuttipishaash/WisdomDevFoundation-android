@@ -376,6 +376,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void setInstiMarker()
     {
+        final LinearLayout loading=(LinearLayout)findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
         int i=0;
         Log.d("location size= ",locations.size()+"");
 
@@ -394,6 +396,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             final File finalLocalFile = localFile;
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             final int finalI = i;
+            final int finalI1 = i;
             storageReference.child("display pictures/"+locations.get(i).type+".png").getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
@@ -402,7 +405,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng ll = locations.get(finalI).loc;
                     MarkerOptions options = new MarkerOptions().title(locations.get(finalI).type).snippet(finalI +"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
                     mMarker=mMap.addMarker(options);
-
+                    if(finalI1 ==locations.size()-1)
+                    {
+                        loading.setVisibility(View.INVISIBLE);
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
