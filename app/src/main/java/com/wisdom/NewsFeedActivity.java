@@ -72,7 +72,7 @@ public class NewsFeedActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         FeedItem item = mFeedAdapter.getItemClicked(position);
 
-                        Intent intent = new Intent(NewsFeedActivity.this, ViewNewsActivity.class);
+                        Intent intent = new Intent(NewsFeedActivity.this, NewsViewActivity.class);
                         intent.putExtra("articleHeading", item.getTitle().getRendered());
                         intent.putExtra("articleContent", item.getContent().getRendered());
                         intent.putExtra("articleImageId", item.getFeaturedMedia());
