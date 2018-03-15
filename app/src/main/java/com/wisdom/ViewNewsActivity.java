@@ -7,6 +7,15 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class ViewNewsActivity extends AppCompatActivity {
 
     private TextView mHeading;
@@ -25,6 +34,30 @@ public class ViewNewsActivity extends AppCompatActivity {
         mHeading.setText(getIntent().getStringExtra("articleHeading"));
         mContent.setText(getIntent().getStringExtra("articleContent"));
 
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl("http://wisdominitiatives.org")
+                .addConverterFactory(GsonConverterFactory.create());
+        Retrofit retrofit = builder
+                .client(httpClient.build())
+                .build();
+        FeedClient feedClient = retrofit.create(FeedClient.class);
+        Call<FeedImage> imageCall = feedClient.image(getIntent().getStringExtra("articleImageId"));
+
+        imageCall.enqueue(new Callback<FeedImage>() {
+            @Override
+            public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
+                Glide.with(ViewNewsActivity.this)
+                        .load(response.body().getGuid().getRendered())
+                        .into(mImage);
+            }
+
+            @Override
+            public void onFailure(Call<FeedImage> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
