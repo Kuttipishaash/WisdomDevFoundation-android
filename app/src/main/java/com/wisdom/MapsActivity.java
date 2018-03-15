@@ -402,6 +402,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng ll = locations.get(finalI).loc;
                     MarkerOptions options = new MarkerOptions().title(locations.get(finalI).type).snippet(finalI +"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
                     mMarker=mMap.addMarker(options);
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

@@ -32,7 +32,8 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity android:name=".LocationDetailer"
-            android:label="Details"/>
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ContactUsActivity"
             android:label="Contact Us"/>
         <activity android:name=".AboutUsActivity"

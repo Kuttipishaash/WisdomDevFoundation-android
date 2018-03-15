@@ -230,7 +230,7 @@ public class LocationDetailer extends AppCompatActivity
             {
                     for(DataSnapshot ds:dataSnapshot.getChildren())
                     {
-                        if(ds.child("uid").getValue().toString().equals(uid))
+                        if(ds.child("person").getValue().toString().equals(uid))
                         {
                             commented=true;
                             my_comment.text=ds.child("uid").getValue().toString();
