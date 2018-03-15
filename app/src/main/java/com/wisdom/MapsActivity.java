@@ -18,6 +18,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -103,10 +104,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     String cur_typ;
+    Marker mMarker;
     FloatingActionButton home_gps;
     ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
     ArrayList<Integer> upr_activities=new ArrayList<Integer>();
-    Polyline polylines;
     Marker my_marker=null;
     LatLng cur_location=null;
     LatLng destination=null;
@@ -121,18 +122,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     CommentAdapter commentLister = null;
     GoogleMap mMap=null,statmMap;
     int current_i;
-
+    ProgressDialog progressBar;
+    boolean flag;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        flag = false;
         setContentView(R.layout.activity_maps);
         locationListenSet();
-        polylines=null;
         registerInternetCheckReceiver();
         bottomSheetSetup();
-        home_gps=(FloatingActionButton)findViewById(R.id.gps_home);
-        final SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
-        final ProgressDialog progressBar = new ProgressDialog(this);
+        home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
+        final SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
+        progressBar = new ProgressDialog(this);
         registerInternetCheckReceiver();
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -140,20 +142,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         progressBar.setCancelable(true);
         progressBar.setMessage("Retrieving location");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressBar.setProgress(0);
-        progressBar.setMax(100);
         progressBar.show();
-        cur_location=null;
-        new Thread(new Runnable() {
-            public void run() {
-                while (locpref.getString("lat","").equals("")||cur_location==null);
-                progressBar.dismiss();
-               // retrieveTheNearServices();
-                Log.d("firebase checking","yaa fine");
-            }
-        }).start();
+        cur_location = null;
     }
-
     private void registerInternetCheckReceiver() {
         IntentFilter internetFilter = new IntentFilter();
         internetFilter.addAction("android.net.wifi.STATE_CHANGE");
@@ -238,66 +229,76 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 else
                 {
-                    drawRoute();
-                }
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                            Uri.parse("http://maps.google.com/maps?saddr="+cur_location.latitude
+                                      +","+cur_location.longitude+"&daddr="+locations.get(current_i).loc.latitude+","+locations.get(current_i).loc.longitude+""));
+                    startActivity(intent);                }
             }
         });
     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                bs_up=true;
-                if(polylines!=null)
-                    polylines.remove();
-                current_i=Integer.parseInt(marker.getSnippet());
-                //home_gps.setImageResource(R.drawable.toilet);
-                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
-                Button moredetails=(Button)findViewById(R.id.moredetails);
-                home_gps.setImageResource(R.drawable.navigation);
-                moredetails.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent=new Intent(MapsActivity.this,LocationDetailer.class);
-                        intent.putExtra("loc num",locations.get(Integer.parseInt(marker.getSnippet())).num);
-                        intent.putExtra("loc type",marker.getTitle());
-                        intent.putExtra("loc tot_comments",locations.get(Integer.parseInt(marker.getSnippet())).tot_comments);
-                        intent.putExtra("loc name",locations.get(Integer.parseInt(marker.getSnippet())).name);
-                        intent.putExtra("loc rating",locations.get(Integer.parseInt(marker.getSnippet())).rating);
-                        intent.putExtra("loc address",locations.get(Integer.parseInt(marker.getSnippet())).address);
-                        startActivity(intent);
-                    }
-                });
-                TextView addrss_tv=(TextView)findViewById(R.id.bs_address_name);
-                TextView type_tv=(TextView)findViewById(R.id.bs_type);
-                TextView name_tv=(TextView)findViewById(R.id.bs_address_name);
-                ImageView rating_iv=(ImageView)findViewById(R.id.bs_rating);
-                addrss_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).address);
-                type_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).type);
-                name_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).name);
-                String rate_name = "";
-                switch (locations.get(Integer.parseInt(marker.getSnippet())).rating)
+                if(marker.getSnippet().equals("HAHA"))
                 {
-                    case 1:     rate_name="terrible";
-                        break;
-
-                    case 2:     rate_name="bad";
-                        break;
-
-                    case 3:     rate_name="okay";
-                        break;
-
-                    case 4:     rate_name="good";
-                        break;
-
-                    case 5:     rate_name="great";
-                        break;
+                    Toast.makeText(MapsActivity.this,"You are here!",LENGTH_LONG).show();
                 }
-                String uri = "@drawable/";  // where myresource (without the extension) is the file
+                else {
+                    bs_up=true;
+                    current_i = Integer.parseInt(marker.getSnippet());
+                    //home_gps.setImageResource(R.drawable.toilet);
+                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    Button moredetails = (Button) findViewById(R.id.moredetails);
+                    home_gps.setImageResource(R.drawable.navigation);
+                    moredetails.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(MapsActivity.this, LocationDetailer.class);
+                            intent.putExtra("loc num", locations.get(Integer.parseInt(marker.getSnippet())).num);
+                            intent.putExtra("loc type", marker.getTitle());
+                            intent.putExtra("loc tot_comments", locations.get(Integer.parseInt(marker.getSnippet())).tot_comments);
+                            intent.putExtra("loc name", locations.get(Integer.parseInt(marker.getSnippet())).name);
+                            intent.putExtra("loc rating", locations.get(Integer.parseInt(marker.getSnippet())).rating);
+                            intent.putExtra("loc address", locations.get(Integer.parseInt(marker.getSnippet())).address);
+                            startActivity(intent);
+                        }
+                    });
+                    TextView addrss_tv = (TextView) findViewById(R.id.bs_address_name);
+                    TextView type_tv = (TextView) findViewById(R.id.bs_type);
+                    TextView name_tv = (TextView) findViewById(R.id.bs_name);
+                    ImageView rating_iv = (ImageView) findViewById(R.id.bs_rating);
+                    addrss_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).address);
+                    type_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).type);
+                    name_tv.setText(locations.get(Integer.parseInt(marker.getSnippet())).name);
+                    String rate_name = "";
+                    switch (locations.get(Integer.parseInt(marker.getSnippet())).rating) {
+                        case 1:
+                            rate_name = "terrible";
+                            break;
 
-                int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-                ImageView imageview= (ImageView)findViewById(R.id.bs_rating);
-                Drawable drawable = getResources().getDrawable(getResources().getIdentifier(rate_name, "drawable", getPackageName()));
-                imageview.setImageDrawable(drawable);
-                return false;
+                        case 2:
+                            rate_name = "bad";
+                            break;
+
+                        case 3:
+                            rate_name = "okay";
+                            break;
+
+                        case 4:
+                            rate_name = "good";
+                            break;
+
+                        case 5:
+                            rate_name = "great";
+                            break;
+                    }
+                    String uri = "@drawable/";  // where myresource (without the extension) is the file
+
+                    int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                    ImageView imageview = (ImageView) findViewById(R.id.bs_rating);
+                    Drawable drawable = getResources().getDrawable(getResources().getIdentifier(rate_name, "drawable", getPackageName()));
+                    imageview.setImageDrawable(drawable);
+                }
+                return true;
             }
         });
     }
@@ -372,170 +373,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         return deg * (Math.PI/180);
     }
-    void drawRoute()
-    {
-        //String url = getDirectionsUrl(cur_location,destinatilon);
-        String url = getDirectionsUrl(cur_location,destination);
-        DownloadTask downloadTask = new DownloadTask();
-        downloadTask.execute(url);
-    }
-    private String getDirectionsUrl(LatLng origin,LatLng dest){
-        origin=new LatLng(cur_location.latitude,cur_location.longitude);
-        dest=new LatLng(locations.get(current_i).loc.latitude,locations.get(current_i).loc.longitude);
-        // Origin of route
-        LatLng midpoint=new LatLng((locations.get(current_i).loc.latitude+cur_location.latitude)/2,(locations.get(current_i).loc.longitude+cur_location.longitude)/2);
-        CameraUpdate location=CameraUpdateFactory.newLatLngZoom(midpoint,11);
-        mMap.animateCamera(location);
-        String str_origin = "origin="+origin.latitude+","+origin.longitude;
-        // Destination of route
-        String str_dest = "destination="+dest.latitude+","+dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-
-        // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+sensor;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-
-        return url;
-    }
-    @SuppressLint("LongLogTag")
-    private String downloadUrl(String strUrl) throws IOException{
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try{
-            URL url = new URL(strUrl);
-
-            // Creating an http connection to communicate with url
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            // Connecting to url
-            urlConnection.connect();
-
-            // Reading data from url
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while( ( line = br.readLine()) != null){
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        }catch(Exception e){
-            Log.d("Exception", e.toString());
-        }finally{
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    // Fetches data from url passed
-    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-
-        // Downloading data in non-ui thread
-        @Override
-        protected String doInBackground(String... url) {
-
-            // For storing data from web service
-            String data = "";
-
-            try{
-                // Fetching the data from web service
-                data = downloadUrl(url[0]);
-            }catch(Exception e){
-                Log.d("Background Task",e.toString());
-            }
-            return data;
-        }
-
-        // Executes in UI thread, after the execution of
-        // doInBackground()
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-            // Invokes the thread for parsing the JSON data
-            parserTask.execute(result);
-        }
-    }
-
-    /** A class to parse the Google Places in JSON format */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try{
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                // Starts parsing data
-                routes = parser.parse(jObject);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        // Executes in UI thread, after the parsing process
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
-            PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            // Traversing through all the routes
-            for(int i=0;i<result.size();i++){
-                points = new ArrayList<LatLng>();
-                lineOptions = new PolylineOptions();
-
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
-
-                // Fetching all the points in i-th route
-                for(int j=0;j<path.size();j++){
-                    HashMap<String,String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(10);
-                lineOptions.color(Color.GREEN);
-            }
-
-            // Drawing polyline in the Google Map for the i-th route
-            polylines=mMap.addPolyline(lineOptions);
-
-
-        }
-    }
 
     void setInstiMarker()
     {
@@ -564,7 +401,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     rdp.setImageBitmap(bitmap);
                     LatLng ll = locations.get(finalI).loc;
                     MarkerOptions options = new MarkerOptions().title(locations.get(finalI).type).snippet(finalI +"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-                    mMap.addMarker(options);
+                    mMarker=mMap.addMarker(options);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -661,8 +498,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             cur_location=new LatLng(location.getLatitude(),location.getLongitude());
             Toast.makeText(MapsActivity.this,"Location changed "+cur_location,LENGTH_LONG).show();
-            setMyMarker(cur_location);
-            retrieveTheNearServices();
+            if(mMap!=null)
+            {
+                setMyMarker(cur_location);
+                if(flag==false) {
+                    retrieveTheNearServices();
+                    progressBar.dismiss();
+                }
+            }
+            flag=true;
         }
 
         @Override
@@ -709,9 +553,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     mBottomSheetBehavior1.setPeekHeight(0);
                     bs_up=false;
-                    if(polylines!=null)
-                        polylines.remove();
-                    polylines=null;
+
                     home_gps.setImageResource(R.drawable.gps_home);
                 }
             }
