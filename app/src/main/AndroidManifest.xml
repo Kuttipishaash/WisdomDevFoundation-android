@@ -35,7 +35,10 @@
             android:name=".LocationService"
             android:process=":my_service" />
 
-        <activity android:name=".ContactUsActivity" />
+        <activity android:name=".ContactUsActivity"
+            android:label="Contact Us"/>
+        <activity android:name=".AboutUsActivity"
+            android:label="About Us"/>
         <activity
             android:name=".NewsViewActivity"
             android:label="@string/title_activity_news_view"
