@@ -17,7 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ViewNewsActivity extends AppCompatActivity {
-
+/*
     private TextView mHeading;
     private TextView mContent;
     private ImageView mImage;
@@ -79,5 +79,5 @@ public class ViewNewsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+*/
 }
