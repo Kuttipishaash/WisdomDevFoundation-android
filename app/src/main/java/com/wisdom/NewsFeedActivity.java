@@ -31,7 +31,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewsFeedActivity extends AppCompatActivity {
 
-    private List<FeedItem> feedItems;
     private ListView mFeedList;
     private NewsFeedAdapter mFeedAdapter;
 
