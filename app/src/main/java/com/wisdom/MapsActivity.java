@@ -1,7 +1,6 @@
 package com.wisdom;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -20,33 +19,25 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,8 +47,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -68,26 +57,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.hsalf.smilerating.SmileRating;
-import com.mahc.custombottomsheetbehavior.BottomSheetBehaviorGoogleMapsLike;
-import com.mahc.custombottomsheetbehavior.MergedAppBarLayout;
-import com.mahc.custombottomsheetbehavior.MergedAppBarLayoutBehavior;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -104,6 +78,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     String cur_typ;
+    String dp_url="http://pluspng.com/img-png/allu-arjun-png-allu-arjun-png-image-500.png";
     Marker mMarker;
     FloatingActionButton home_gps;
     ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
@@ -118,12 +93,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     BottomSheetBehavior<View> mBottomSheetBehavior1;
     boolean bs_up;
     View bottomSheet;
+    CircleImageView u_dp=null;
      Institution one,two,three;
     CommentAdapter commentLister = null;
     GoogleMap mMap=null,statmMap;
     int current_i;
     ProgressDialog progressBar;
+    View loading = null;
     boolean flag;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,10 +110,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationListenSet();
         registerInternetCheckReceiver();
         bottomSheetSetup();
+        loading=findViewById(R.id.loading);
         home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
         final SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
         progressBar = new ProgressDialog(this);
-        registerInternetCheckReceiver();
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -143,6 +121,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         progressBar.setMessage("Retrieving location");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.show();
+        progressBar.setCancelable(false);
+
         cur_location = null;
     }
     private void registerInternetCheckReceiver() {
@@ -306,6 +286,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void retrieveTheNearServices()
     {
+        loading.setVisibility(View.VISIBLE);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
         /////Toilet data
@@ -314,8 +295,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 int i=0;
+                if(dataSnapshot.getChildrenCount()!=0)
                 for(DataSnapshot ds:dataSnapshot.getChildren())
                     {
+                        ++i;
                         if(30>getDistanceFromLatLonInKm(cur_location.latitude,cur_location.longitude,
                                 Double.parseDouble(ds.child("lat").getValue().toString()),
                                 Double.parseDouble(ds.child("lng" +
@@ -346,7 +329,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             });
                         }
                     }
-                    setInstiMarker();
+                    if(i==0) {
+                        loading.setVisibility(View.INVISIBLE);
+                        Toast.makeText(MapsActivity.this,"No service found nearby your location ",LENGTH_LONG).show();
+                    }
+                    else
+                        setInstiMarker();
             }
                     @Override
                     public void onCancelled(DatabaseError error) {
@@ -376,8 +364,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void setInstiMarker()
     {
-      //  final View loading=findViewById(R.id.loading);
-       // loading.setVisibility(View.VISIBLE);
         int i=0;
         Log.d("location size= ",locations.size()+"");
 
@@ -407,7 +393,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMarker=mMap.addMarker(options);
                     if(finalI1 ==locations.size()-1)
                     {
-                  //      loading.setVisibility(View.INVISIBLE);
+                        loading.setVisibility(View.INVISIBLE);
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -424,17 +410,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
        void setMyMarker(final LatLng loc)
        {
+
            if(my_marker!=null)
                my_marker.remove();
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
-            View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
-            final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
-            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defaultdp);
-            rdp.setImageBitmap(icon);
-            LatLng ll = new LatLng(loc.latitude,loc.longitude);
-            MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            my_marker=mMap.addMarker(options);
-           changeCam(loc);
+             new DownloadDp().execute();
+                if(flag==false)
+                changeCam(loc);
 
        }
     public Bitmap createDrawableFromView(Context context, View view) {
@@ -504,7 +486,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void onLocationChanged(Location location)
         {
             cur_location=new LatLng(location.getLatitude(),location.getLongitude());
-            Toast.makeText(MapsActivity.this,"Location changed "+cur_location,LENGTH_LONG).show();
             if(mMap!=null)
             {
                 setMyMarker(cur_location);
@@ -570,7 +551,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+    }
 
 
+    private class DownloadDp extends AsyncTask<String, Void, Bitmap> {
+
+
+        @Override
+        protected Bitmap doInBackground(String... URL) {
+
+            Bitmap bitmap = null;
+            try {
+                InputStream input = new java.net.URL(dp_url).openStream();
+                // Decode Bitmap
+                bitmap = BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            // Set the bitmap into ImageView
+            View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
+            final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
+            u_dp=rdp;
+            u_dp.setImageBitmap(result);
+            LatLng ll = new LatLng(cur_location.latitude,cur_location.longitude);
+            MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
+            my_marker=mMap.addMarker(options);
+        }
     }
 }

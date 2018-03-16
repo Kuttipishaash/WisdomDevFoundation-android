@@ -60,8 +60,8 @@ public class LocationDetailer extends AppCompatActivity
 {
     String type,name,address;
     int num,tot_comments,rating;
-    int curr_point;
-    boolean commented,commenting;
+    int curr_point,comm_my_pos;
+    boolean commented,listed,commenting,lock;
     Locations.Comments my_comment=null;
     ListView listView;
     private Animator mCurrentAnimator;
@@ -73,9 +73,12 @@ public class LocationDetailer extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         my_comment=new Locations.Comments();
+        listed=false;
+        lock=true;
         setContentView(R.layout.bottom_sheet_content);
         Bundle extras = getIntent().getExtras();
         uid="1";
+        comm_my_pos=-1;
         String value1 = extras.getString(Intent.EXTRA_TEXT);
         comments=new ArrayList<Locations.Comments>();
         type=extras.getString("loc type");
@@ -104,26 +107,45 @@ public class LocationDetailer extends AppCompatActivity
                             @Override
                             public void onClick(View v)
                             {
+                                final boolean[] rated = {false};
                                 EditText comment=(EditText)addcomment.findViewById(R.id.editText2);
                                 SmileRating sr=(SmileRating)addcomment.findViewById(R.id.smile_rating);
+
                                 if(comment.getText().toString().equals(""))
                                 {
                                     Toast.makeText(LocationDetailer.this,"Enter a comment",Toast.LENGTH_LONG).show();
                                 }
-                                else if(!sr.isSelected())
+                                else if(sr.equals(0))
                                 {
                                     Toast.makeText(LocationDetailer.this,"Rate us how you feel",Toast.LENGTH_LONG).show();
                                 }
                                 else {
                                     Toast.makeText(LocationDetailer.this,"Thank you",Toast.LENGTH_LONG).show();
-
+                                    int rating=sr.getRating();
+                                    if(rating==0)
+                                        rating=1;
                                     final ProgressBar progressBar = findViewById(R.id.comment_progress);
                                     progressBar.setVisibility(View.VISIBLE);
-
+                                    if(comm_my_pos!=-1)
+                                    {
+                                        Locations.Comments commm=new Locations.Comments();
+                                        commm.dp=comments.get(comm_my_pos).dp;
+                                        commm.name=comments.get(comm_my_pos).name;
+                                        commm.text=comment.getText().toString();
+                                        commm.rating=rating;
+                                        comments.set(comm_my_pos,new Locations.Comments());
+                                        listView.removeAllViews();
+                                        commentAdapter.notifyDataSetChanged();
+                                    }
+                                    else
+                                    {
+                                        setComments();
+                                    }
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     final DatabaseReference myRef = database.getReference("");
                                     myRef.child("Comments").child(num + "").child(uid).child("text").setValue(comment.getText().toString());
-                                    myRef.child("Comments").child(num + "").child(uid).child("rating").setValue(sr.getRating());
+                                    myRef.child("Comments").child(num + "").child(uid).child("rating").setValue(rating);
+
                                     myRef.child("Comments").child(num + "").child(uid).child("person").setValue(uid);
                                     myRef.child("Comments").child(num + "").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -143,11 +165,12 @@ public class LocationDetailer extends AppCompatActivity
                                             addcomment.setVisibility(View.INVISIBLE);
                                             commentlist.setVisibility(View.VISIBLE);
                                             progressBar.setVisibility(View.INVISIBLE);
-                                            comments = new ArrayList<Locations.Comments>();
-                                            commentAdapter.notifyDataSetChanged();
-                                            setComments();
+                                          //  comments = new ArrayList<Locations.Comments>();
+                                        //    if(commentAdapter!=null)
+                                        //      commentAdapter.notifyDataSetChanged();
+                                      //      setComments();
+                                            checkCommented();
                                         }
-
                                         @Override
                                         public void onCancelled(DatabaseError error) {
                                             // Failed to read value
@@ -240,12 +263,13 @@ public class LocationDetailer extends AppCompatActivity
         final Button button=(Button)findViewById(R.id.button2);
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
-        myRef.child("Comments").child(num+"").child(uid).addValueEventListener(new ValueEventListener() {
+        myRef.child("Comments").child(num+"").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                     if(dataSnapshot.child("text").getValue()!=null)
                     {
+                        my_comment=new Locations.Comments();
                         commented=true;
                         my_comment.text=dataSnapshot.child("text").getValue().toString();
                         my_comment.rating=Integer.parseInt(dataSnapshot.child("rating").getValue().toString())-1;
@@ -268,45 +292,67 @@ public class LocationDetailer extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
-        myRef.child("Comments").child(num+"").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.child("Comments").child(num+"").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 int i=0;
+                comments=new ArrayList<Locations.Comments>();
                 listView=findViewById(R.id.comments);
-
                 i=0;
                 final DataSnapshot finds=dataSnapshot;
-                for(final DataSnapshot ds:dataSnapshot.getChildren())
+                View cmmlist=findViewById(R.id.comments);
+                Log.d("Comments datass:", "datasnapshot childcount: "+dataSnapshot.getChildrenCount()+"Comments data:  "+comments.size());
+                if(dataSnapshot.getChildrenCount()==0)
                 {
-                    i++;
-                    final Locations.Comments cmmnts=new Locations.Comments();
-                    cmmnts.rating=Integer.parseInt(ds.child("rating").getValue().toString());
-                    cmmnts.text=ds.child("text").getValue().toString();
-                    final int finalI = i;
-                    myRef.child("Users").child(ds.child("person").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot)
-                        {
-                            cmmnts.name=dataSnapshot.child("name").getValue().toString();
-                            cmmnts.dp =dataSnapshot.child("dp_uri").getValue().toString();
-                            comments.add(cmmnts);
-                            if(finalI ==finds.getChildrenCount())
-                            {
-                                progressBar.setVisibility(View.INVISIBLE);
-                                commentAdapter=new CommentAdapter(LocationDetailer.this,comments);
-                                listView.setAdapter(commentAdapter);
-                            }
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.w(TAG, "Failed to read value.", error.toException());
-                        }
-                    });
-                    Log.d("Comments adapt:", cmmnts.rating+"   "+ cmmnts.text+"  ");
+                    progressBar.setVisibility(View.INVISIBLE);
+                    View nocomments=findViewById(R.id.nocomments);
+                    nocomments.setVisibility(View.VISIBLE);
+                    cmmlist.setVisibility(View.INVISIBLE);
                 }
+                else {
+                    if(cmmlist.getVisibility()==View.INVISIBLE)
+                    {
+                        cmmlist.setVisibility(View.VISIBLE);
+                    }
+                    for (final DataSnapshot ds : dataSnapshot.getChildren())
+                        {
+                        final Locations.Comments cmmnts=new Locations.Comments();
+                        i++;
+                        cmmnts.rating = Integer.parseInt(ds.child("rating").getValue().toString());
+                        cmmnts.text = ds.child("text").getValue().toString();
+                        final int finalI = i;
+                        myRef.child("Users").child(ds.child("person").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                cmmnts.name = dataSnapshot.child("name").getValue().toString();
+                                cmmnts.dp = dataSnapshot.child("dp_uri").getValue().toString();
+                                comments.add(cmmnts);
+                                if(uid.equals(dataSnapshot.child("dp_uri").getValue().toString()))
+                                    comm_my_pos=comments.size();
+                                if (finalI == finds.getChildrenCount()) {
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                    if (listed == false) {
+                                        listed = true;
+                                        commentAdapter = new CommentAdapter(LocationDetailer.this, comments);
+                                        listView.setAdapter(commentAdapter);
+                                    } else {
+                                        Toast.makeText(LocationDetailer.this,"Comment added",Toast.LENGTH_LONG).show();
+                                        commentAdapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.w(TAG, "Failed to read value.", error.toException());
+                            }
+                        });
+                        Log.d("Comments adapt:", cmmnts.rating + "   " + cmmnts.text + "  ");
+
+                    }
+                }
             }
             @Override
             public void onCancelled(DatabaseError error) {

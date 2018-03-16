@@ -18,8 +18,8 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".SplashActivity"
-            android:noHistory="true"
+            android:name=".NewsFeedActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,26 +27,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".NewsFeedActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
         <activity android:name=".IntroActivity" />
         <activity
             android:name=".MapsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity android:name=".LocationDetailer"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ContactUsActivity"
+            android:screenOrientation="portrait"
             android:label="Contact Us"/>
         <activity android:name=".AboutUsActivity"
+            android:screenOrientation="portrait"
             android:label="About Us"/>
         <activity
+            android:screenOrientation="portrait"
             android:name=".NewsViewActivity"
             android:label="@string/title_activity_news_view"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
