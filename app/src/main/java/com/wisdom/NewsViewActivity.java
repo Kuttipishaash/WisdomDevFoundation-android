@@ -72,6 +72,7 @@ public class NewsViewActivity extends AppCompatActivity {
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                resource.setAlpha(150);
                                 mToolbarLayout.setBackground(resource);
                             }
                         });
