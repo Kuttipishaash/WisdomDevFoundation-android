@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -86,11 +90,21 @@ public class NewsFeedActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<FeedItem>> call, Throwable t) {
-                //TODO: set network handler
-                Toast.makeText(NewsFeedActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                FrameLayout frameLayout = findViewById(R.id.fragment_newsfeed_container);
+
+                Fragment fragment = new NoNetworkFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.fragment_newsfeed_container, fragment);
+
+                View view = findViewById(R.id.activity_news_container);
+                view.setVisibility(View.GONE);
+
+                frameLayout.setVisibility(View.VISIBLE);
+                Toast.makeText(NewsFeedActivity.this, "Fail", Toast.LENGTH_SHORT).show();
+
+                fragmentTransaction.commit();
             }
         });
-
     }
 
     private void initNavDrawer() {
