@@ -23,6 +23,13 @@
     <!--android:name="com.google.android.gms.maps.SupportMapFragment"/>-->
 
 
+    <ProgressBar
+        android:id="@+id/loading"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        tools:visibility="invisible" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/gps_home"
         android:layout_width="wrap_content"
