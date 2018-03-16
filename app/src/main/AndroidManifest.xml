@@ -18,7 +18,8 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".NewsFeedActivity"
+            android:name=".SplashActivity"
+            android:noHistory="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,14 +27,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".NewsFeedActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
         <activity android:name=".IntroActivity" />
         <activity
             android:name=".MapsActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity android:name=".LocationDetailer"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ContactUsActivity"
             android:label="Contact Us"/>
         <activity android:name=".AboutUsActivity"
@@ -41,7 +46,7 @@
         <activity
             android:name=".NewsViewActivity"
             android:label="@string/title_activity_news_view"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

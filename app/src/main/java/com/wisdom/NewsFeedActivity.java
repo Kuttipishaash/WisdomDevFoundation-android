@@ -17,6 +17,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -118,6 +121,12 @@ public class NewsFeedActivity extends AppCompatActivity {
                     case R.id.nav_map:
                         startActivity(new Intent(NewsFeedActivity.this, MapsActivity.class));
                         break;
+                    case R.id.nav_share:
+                        //TODO:Share app functionality
+                        break;
+                    case R.id.nav_logout:
+                        logout();
+                        break;
                     default:
                         return false;
                 }
@@ -144,6 +153,16 @@ public class NewsFeedActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    //Function to logout using Firebase AuthUI
+    private void logout() {
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+        fAuth.signOut();
+        FirebaseUser firebaseUser = fAuth.getCurrentUser();
+        if (firebaseUser == null) {
+
         }
     }
 }

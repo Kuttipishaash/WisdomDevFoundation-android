@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "411883061715-kv6rbqa58qdoq3vuotetpgk99pjm9vpd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wisdom",
+            "certificate_hash": "d65f68f22970bfc38b9020c2bbd0ebd950fecc13"
+          }
+        },
+        {
           "client_id": "411883061715-adfun355b4mq88e544cu5a7dj5sms0b3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
