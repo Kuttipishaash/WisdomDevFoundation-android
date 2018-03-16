@@ -337,6 +337,7 @@ public class LocationDetailer extends AppCompatActivity
                                         commentAdapter = new CommentAdapter(LocationDetailer.this, comments);
                                         listView.setAdapter(commentAdapter);
                                     } else {
+                                        commentAdapter=new CommentAdapter(LocationDetailer.this,comments);
                                         Toast.makeText(LocationDetailer.this,"Comment added",Toast.LENGTH_LONG).show();
                                         commentAdapter.notifyDataSetChanged();
                                     }

@@ -21,6 +21,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -171,11 +174,15 @@ public class NewsFeedActivity extends AppCompatActivity {
 
     //Function to logout using Firebase AuthUI
     private void logout() {
-        FirebaseAuth fAuth = FirebaseAuth.getInstance();
-        fAuth.signOut();
-        FirebaseUser firebaseUser = fAuth.getCurrentUser();
-        if (firebaseUser == null) {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // user is now signed out
+                        startActivity(new Intent(NewsFeedActivity.this, SplashActivity.class));
+                        finish();
+                    }
+                });
 
-        }
     }
 }
