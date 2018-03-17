@@ -284,12 +284,12 @@ public class LocationDetailer extends AppCompatActivity
                 listView=findViewById(R.id.comments);
                 i=0;
                 final DataSnapshot finds=dataSnapshot;
-                View cmmlist=findViewById(R.id.comments);
+                View cmmlist=findViewById(R.id.comment_list);
+                View nocomments=findViewById(R.id.nocomments);
                 Log.d("Comments datass:", "datasnapshot childcount: "+dataSnapshot.getChildrenCount()+"Comments data:  "+comments.size());
                 if(dataSnapshot.getChildrenCount()==0)
                 {
                     progressBar.setVisibility(View.INVISIBLE);
-                    View nocomments=findViewById(R.id.nocomments);
                     nocomments.setVisibility(View.VISIBLE);
                     cmmlist.setVisibility(View.INVISIBLE);
                 }
@@ -297,6 +297,7 @@ public class LocationDetailer extends AppCompatActivity
                 {
                     if(cmmlist.getVisibility()==View.INVISIBLE)
                     {
+                        nocomments.setVisibility(View.INVISIBLE);
                         cmmlist.setVisibility(View.VISIBLE);
                     }
                     comments.clear();

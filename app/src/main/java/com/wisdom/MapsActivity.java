@@ -29,6 +29,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -81,7 +82,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     String cur_typ;
-    String dp_url="http://pluspng.com/img-png/allu-arjun-png-allu-arjun-png-image-500.png";
+    private static final String PREF_FILE = "UserPreferences";
+    String dp_url="";
     Marker mMarker;
     FloatingActionButton home_gps;
     ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
@@ -109,12 +111,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flag = false;
+        SharedPreferences dpuri=getSharedPreferences(PREF_FILE,MODE_PRIVATE);
+        dp_url=dpuri.getString("user_image_url","");
         setContentView(R.layout.activity_maps);
         locationListenSet();
         registerInternetCheckReceiver();
         bottomSheetSetup();
         loading=(SmoothProgressBar) findViewById(R.id.loading1);
-
         home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
         final SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
         progressBar = new ProgressDialog(this);
@@ -159,7 +162,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         snackbar = Snackbar
                                 .make(findViewById(R.id.coordinatorlayout), "Connected", Snackbar.LENGTH_SHORT);
                         snackbar.setActionTextColor(Color.RED);
-
                         View sbView = snackbar.getView();
                         sbView.setBackgroundColor(ContextCompat.getColor(MapsActivity.this,Color.GREEN));
                         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
@@ -295,6 +297,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final DatabaseReference myRef = database.getReference("");
         /////Toilet data
         myRef.child("Locations").addValueEventListener(new ValueEventListener() {
+            @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
@@ -333,9 +336,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             });
                         }
                     }
-                    if(i==0) {
+                    if(locations.size()==0) {
                         loading.setVisibility(View.INVISIBLE);
-                        Toast.makeText(MapsActivity.this,"No service found nearby your location ",LENGTH_LONG).show();
+                        snackbar = Snackbar
+                                .make(findViewById(R.id.coordinatorlayout), "No service found nearby", Snackbar.LENGTH_INDEFINITE);
+                        snackbar.setActionTextColor(Color.RED);
+
+                        View sbView = snackbar.getView();
+
+                        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                        textView.setTextColor(Color.RED);
+                        textView.setGravity(Gravity.CENTER);
+
+                        snackbar.show();
                     }
                     else
                         setInstiMarker();
@@ -417,9 +430,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
            if(my_marker!=null)
                my_marker.remove();
-            SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
-             new DownloadDp().execute();
            loading.setVisibility(View.VISIBLE);
+           SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
+             new DownloadDp().execute();
            if(flag==false)
                 changeCam(loc);
 
@@ -541,7 +554,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // mBottomSheetBehavior1.setPeekHeight(bottomSheet.getHeight());
                     mBottomSheetBehavior1.setPeekHeight(0);
                     mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
-
                 }
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     mBottomSheetBehavior1.setPeekHeight(0);
@@ -582,7 +594,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
             final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
             u_dp=rdp;
-            u_dp.setImageBitmap(result);
+            if(result!=null)
+                u_dp.setImageBitmap(result);
+            else
+                u_dp.setImageResource(R.drawable.defaultdp);
             LatLng ll = new LatLng(cur_location.latitude,cur_location.longitude);
             MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
             my_marker=mMap.addMarker(options);
