@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_map"
-            android:icon="@drawable/ic_pin_drop_white_24dp"
-            android:title="Locate Services" />
-        <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_share_black"
-            android:title="Share App" />
-        <item
-            android:id="@+id/nav_contact"
-            android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="Contact Us" />
-        <item
-            android:id="@+id/nav_info"
-            android:icon="@drawable/ic_info_black_24dp"
-            android:title="About Us" />
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_logout_white_24dp"
-            android:title="Logout" />
-    </group>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Services">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_map"
+                    android:icon="@drawable/ic_pin_drop_white_24dp"
+                    android:title="Locate Services" />
+
+
+            </group>
+        </menu>
+    </item>
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_share_black"
+                android:title="Share App" />
+            <item
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/ic_account_circle_black_24dp"
+                android:title="Contact Us" />
+        </menu>
+    </item>
+
+
+    <item android:title="More Options">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_info"
+                    android:icon="@drawable/ic_info_black_24dp"
+                    android:title="About Us" />
+                <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_exit_to_app_white_24dp"
+                    android:title="Logout" />
+            </group>
+        </menu>
+    </item>
+
 </menu>

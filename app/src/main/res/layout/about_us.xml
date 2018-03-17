@@ -59,6 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:autoLink="email"
                     android:textColor="@color/md_white_1000"
                     android:text="info@wisdomintiatives.org" />
 
@@ -83,9 +84,34 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:autoLink="phone"
                     android:layout_gravity="center_horizontal"
                     android:textColor="@color/md_white_1000"
                     android:text="+91 952691 0507" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linear_layout_about_webpage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="14dp"
+                    android:padding="5dp"
+                    android:textColor="@color/md_white_1000"
+                    android:text="Website:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/md_white_1000"
+                    android:text="wisdominitiatives.org" />
             </LinearLayout>
 
 
@@ -106,21 +132,30 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="250dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="35dp"
                     android:layout_gravity="center_horizontal"
                     android:textColor="@color/md_white_1000"
                     android:text="WISDOM DEVELOPMENT FOUNDATION is based in Kochi working for the development of the society in grass root level. " />
             </LinearLayout>
 
-
-
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:padding="5dp"
+                android:textColor="@color/md_white_1000"
+                android:text="An App Developed by:"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_marginTop="1dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/md_white_1000"
+                android:text="Prejith, Prabhashankar, Mebin &amp; Pranav"/>
         </LinearLayout>
 
 
