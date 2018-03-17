@@ -8,6 +8,10 @@
                     android:id="@+id/nav_map"
                     android:icon="@drawable/ic_pin_drop_white_24dp"
                     android:title="Locate Services" />
+                <item
+                    android:id="@+id/emg_srv"
+                    android:icon="@drawable/ic_ambulance_white_24dp"
+                    android:title="Emergency Service" />
 
 
             </group>
@@ -17,7 +21,7 @@
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_share_black"
+                android:icon="@drawable/ic_share_white_24dp"
                 android:title="Share App" />
             <item
                 android:id="@+id/nav_contact"

@@ -45,6 +45,6 @@
         android:tint="@color/md_white_1000"
         app:layout_anchor="@id/app_bar_news_view"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_share_black" />
+        app:srcCompat="@drawable/ic_share_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

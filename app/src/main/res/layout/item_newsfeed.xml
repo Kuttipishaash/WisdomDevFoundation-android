@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
+    android:layout_marginEnd="9dp"
+    android:layout_marginStart="9dp"
     android:layout_marginTop="8dp"
     android:orientation="vertical"
     app:layout_constraintEnd_toEndOf="parent"
@@ -41,30 +41,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:layout_marginRight="2dp"
                 android:ellipsize="end"
                 android:maxLength="100"
                 android:maxLines="2"
                 android:text="Download URL"
                 android:textColor="@color/md_black_1000" />
 
+
         </LinearLayout>
 
         <ImageView
             android:id="@+id/img_thumb"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="105dp"
+            android:layout_height="105dp"
+            android:layout_marginEnd="5dp"
+            android:scaleType="centerCrop"
             android:layout_marginTop="8dp"
             android:src="@drawable/placeholder" />
     </LinearLayout>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.75dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="@color/md_grey_200" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:gravity="right">
+        android:gravity="end">
+
         <!--
                     <LinearLayout
                         android:id="@+id/btn_img_like"
@@ -112,18 +121,21 @@
                             android:textColor="@color/colorPrimary" />
                     </LinearLayout>
         -->
+
         <LinearLayout
             android:id="@+id/btn_img_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:gravity="center">
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_marginRight="8dp"
-                android:src="@drawable/share"
+                android:tint="@color/md_grey_500"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_share_white_24dp"
                 android:textColor="@color/colorPrimary" />
 
             <TextView
@@ -132,14 +144,14 @@
                 android:gravity="center"
                 android:text="Share"
                 android:textAllCaps="true"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@color/md_grey_500" />
         </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="6dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:background="@color/colorPrimaryDark" />
+        android:background="@color/md_grey_200" />
 </LinearLayout>
