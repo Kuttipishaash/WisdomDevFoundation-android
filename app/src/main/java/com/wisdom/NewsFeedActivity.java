@@ -1,6 +1,7 @@
 package com.wisdom;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,6 +35,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewsFeedActivity extends AppCompatActivity {
+
+    private static final String PREF_FILE = "UserPreferences";
 
     private ListView mFeedList;
     private NewsFeedAdapter mFeedAdapter;
@@ -171,6 +174,12 @@ public class NewsFeedActivity extends AppCompatActivity {
 
     //Function to logout using Firebase AuthUI
     private void logout() {
+        SharedPreferences mSharedPreferences = getApplicationContext().getSharedPreferences(PREF_FILE, 0);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.remove("user_image_url");
+        editor.remove("user_id");
+        editor.remove("user_email");
+        editor.apply();
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

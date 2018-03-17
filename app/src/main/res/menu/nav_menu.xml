@@ -3,7 +3,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Services">
         <menu>
-            <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_map"
                     android:icon="@drawable/ic_pin_drop_white_24dp"
@@ -12,9 +11,6 @@
                     android:id="@+id/emg_srv"
                     android:icon="@drawable/ic_ambulance_white_24dp"
                     android:title="Emergency Service" />
-
-
-            </group>
         </menu>
     </item>
     <item android:title="Communicate">
@@ -33,7 +29,6 @@
 
     <item android:title="More Options">
         <menu>
-            <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_info"
                     android:icon="@drawable/ic_info_black_24dp"
@@ -42,7 +37,6 @@
                     android:id="@+id/nav_logout"
                     android:icon="@drawable/ic_exit_to_app_white_24dp"
                     android:title="Logout" />
-            </group>
         </menu>
     </item>
 

@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -64,7 +63,7 @@ public class NewsViewActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
                 Glide
-                        .with(NewsViewActivity.this)
+                        .with(getApplicationContext())
                         .load(response.body().getGuid().getRendered())
                         .apply(new RequestOptions()
                                 .centerCrop()
