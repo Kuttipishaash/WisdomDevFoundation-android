@@ -67,7 +67,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
             public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
                 FeedImage image = response.body();
 
-                Glide.with(getContext())
+                Glide.with(getContext().getApplicationContext())       //Using getApplicationContext() inorder to prevent crashing while logging out before images in list are loaded.
                         .load(image.getGuid().getRendered())
                         .into(mThumb);
             }

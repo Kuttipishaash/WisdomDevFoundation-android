@@ -69,13 +69,15 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser = firebaseAuth.getCurrentUser();
-                String userPhoto;
+                String userPhotoURL;
                 count++;
                 Log.d("ENTERED ELSE", "NOW ELSE IS ENTERED " + count);
                 if (firebaseUser != null) {
                     try {
-                        userPhoto = firebaseUser.getPhotoUrl().toString();
-                        Log.d("Photo URL : ", userPhoto);
+                        //Getting user's profile image from google/email and adding it to shared preferences
+                        userPhotoURL = firebaseUser.getPhotoUrl().toString();
+                        mEditor.putString("user_image_url", userPhotoURL);
+                        mEditor.apply();
                     } catch (NullPointerException e) {
                         Log.e("Redirect Activity", "User photo URL is null");
                     }
