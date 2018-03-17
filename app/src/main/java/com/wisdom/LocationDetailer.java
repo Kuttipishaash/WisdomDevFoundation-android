@@ -61,7 +61,7 @@ public class LocationDetailer extends AppCompatActivity
     String type,name,address;
     int num,tot_comments,rating;
     int curr_point,comm_my_pos;
-    boolean commented,listed,commenting,lock;
+    boolean commented,listed,commenting;
     Locations.Comments my_comment=null;
     ListView listView;
     private Animator mCurrentAnimator;
@@ -74,7 +74,6 @@ public class LocationDetailer extends AppCompatActivity
         super.onCreate(savedInstanceState);
         my_comment=new Locations.Comments();
         listed=false;
-        lock=true;
         setContentView(R.layout.bottom_sheet_content);
         Bundle extras = getIntent().getExtras();
         uid="1";
@@ -126,26 +125,11 @@ public class LocationDetailer extends AppCompatActivity
                                         rating=1;
                                     final ProgressBar progressBar = findViewById(R.id.comment_progress);
                                     progressBar.setVisibility(View.VISIBLE);
-                                    if(comm_my_pos!=-1)
-                                    {
-                                        Locations.Comments commm=new Locations.Comments();
-                                        commm.dp=comments.get(comm_my_pos).dp;
-                                        commm.name=comments.get(comm_my_pos).name;
-                                        commm.text=comment.getText().toString();
-                                        commm.rating=rating;
-                                        comments.set(comm_my_pos,new Locations.Comments());
-                                        listView.removeAllViews();
-                                        commentAdapter.notifyDataSetChanged();
-                                    }
-                                    else
-                                    {
-                                        setComments();
-                                    }
+
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     final DatabaseReference myRef = database.getReference("");
                                     myRef.child("Comments").child(num + "").child(uid).child("text").setValue(comment.getText().toString());
                                     myRef.child("Comments").child(num + "").child(uid).child("rating").setValue(rating);
-
                                     myRef.child("Comments").child(num + "").child(uid).child("person").setValue(uid);
                                     myRef.child("Comments").child(num + "").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -168,7 +152,7 @@ public class LocationDetailer extends AppCompatActivity
                                           //  comments = new ArrayList<Locations.Comments>();
                                         //    if(commentAdapter!=null)
                                         //      commentAdapter.notifyDataSetChanged();
-                                      //      setComments();
+                                          setComments();
                                             checkCommented();
                                         }
                                         @Override
@@ -292,12 +276,11 @@ public class LocationDetailer extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
-        myRef.child("Comments").child(num+"").addValueEventListener(new ValueEventListener() {
+        myRef.child("Comments").child(num+"").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 int i=0;
-                comments=new ArrayList<Locations.Comments>();
                 listView=findViewById(R.id.comments);
                 i=0;
                 final DataSnapshot finds=dataSnapshot;
@@ -310,13 +293,15 @@ public class LocationDetailer extends AppCompatActivity
                     nocomments.setVisibility(View.VISIBLE);
                     cmmlist.setVisibility(View.INVISIBLE);
                 }
-                else {
+                else
+                {
                     if(cmmlist.getVisibility()==View.INVISIBLE)
                     {
                         cmmlist.setVisibility(View.VISIBLE);
                     }
+                    comments.clear();
                     for (final DataSnapshot ds : dataSnapshot.getChildren())
-                        {
+                    {
                         final Locations.Comments cmmnts=new Locations.Comments();
                         i++;
                         cmmnts.rating = Integer.parseInt(ds.child("rating").getValue().toString());
@@ -333,14 +318,17 @@ public class LocationDetailer extends AppCompatActivity
                                 if (finalI == finds.getChildrenCount()) {
                                     progressBar.setVisibility(View.INVISIBLE);
                                     if (listed == false) {
-                                        listed = true;
                                         commentAdapter = new CommentAdapter(LocationDetailer.this, comments);
                                         listView.setAdapter(commentAdapter);
-                                    } else {
-                                        commentAdapter=new CommentAdapter(LocationDetailer.this,comments);
+                                    }
+                                    else
+                                    {
+                                        ((CommentAdapter) listView.getAdapter()).notifyDataSetChanged();
+                                      //  commentAdapter=new CommentAdapter(LocationDetailer.this,comments);
                                         Toast.makeText(LocationDetailer.this,"Comment added",Toast.LENGTH_LONG).show();
                                         commentAdapter.notifyDataSetChanged();
                                     }
+                                    listed = true;
                                 }
                             }
 

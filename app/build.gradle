@@ -51,5 +51,8 @@ dependencies {
     compile 'com.heinrichreimersoftware:material-intro:1.6.2'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.hannesdorfmann.smoothprogressbar:library:1.0.0'
+
+
 }
 apply plugin: 'com.google.gms.google-services'

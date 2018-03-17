@@ -31,6 +31,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -64,6 +65,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 
 import static android.content.ContentValues.TAG;
 import static android.widget.Toast.LENGTH_LONG;
@@ -99,7 +102,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     GoogleMap mMap=null,statmMap;
     int current_i;
     ProgressDialog progressBar;
-    View loading = null;
+    SmoothProgressBar loading = null;
     boolean flag;
 
     @Override
@@ -110,7 +113,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationListenSet();
         registerInternetCheckReceiver();
         bottomSheetSetup();
-        loading=findViewById(R.id.loading);
+        loading=(SmoothProgressBar) findViewById(R.id.loading1);
+
         home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
         final SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
         progressBar = new ProgressDialog(this);
@@ -415,7 +419,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                my_marker.remove();
             SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
              new DownloadDp().execute();
-                if(flag==false)
+           loading.setVisibility(View.VISIBLE);
+           if(flag==false)
                 changeCam(loc);
 
        }
@@ -581,6 +586,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             LatLng ll = new LatLng(cur_location.latitude,cur_location.longitude);
             MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
             my_marker=mMap.addMarker(options);
+            loading.setVisibility(View.INVISIBLE);
         }
     }
 }

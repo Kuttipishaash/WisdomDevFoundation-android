@@ -8,6 +8,12 @@
     android:fitsSystemWindows="true"
     tools:context=".MapsActivity">
 
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/loading1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true" />
+
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -22,13 +28,6 @@
     <!--android:id="@+id/support_map"-->
     <!--android:name="com.google.android.gms.maps.SupportMapFragment"/>-->
 
-
-    <ProgressBar
-        android:id="@+id/loading"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        tools:visibility="invisible" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/gps_home"
