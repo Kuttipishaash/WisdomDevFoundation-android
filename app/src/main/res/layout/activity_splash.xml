@@ -8,10 +8,9 @@
     tools:context="com.wisdom.SplashActivity">
 
     <ImageView
-        android:layout_width="248dp"
-        android:layout_height="50dp"
+        android:layout_width="285dp"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/wisdom_logo"
-        android:scaleType="fitXY"
         android:src="@drawable/wisdom_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
