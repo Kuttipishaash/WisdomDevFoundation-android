@@ -1,5 +1,6 @@
 package com.wisdom;
 
+import android.*;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -19,14 +21,18 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.test.mock.MockPackageManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -64,6 +70,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -85,6 +92,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String PREF_FILE = "UserPreferences";
     String dp_url="";
     Marker mMarker;
+    Snackbar snackbar;
+    private static final int ACCESS_FINE_LOCATION_INTENT_ID = 3;
     FloatingActionButton home_gps;
     ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
     ArrayList<Integer> upr_activities=new ArrayList<Integer>();
@@ -114,8 +123,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences dpuri=getSharedPreferences(PREF_FILE,MODE_PRIVATE);
         dp_url=dpuri.getString("user_image_url","");
         setContentView(R.layout.activity_maps);
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (!requestLocationPermission()) {
+                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(MapsActivity.this, "You need to give location access for access map", LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+            }
+
+        }
         locationListenSet();
-        registerInternetCheckReceiver();
         bottomSheetSetup();
         loading=(SmoothProgressBar) findViewById(R.id.loading1);
         home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
@@ -132,68 +155,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         cur_location = null;
     }
-    private void registerInternetCheckReceiver() {
-        IntentFilter internetFilter = new IntentFilter();
-        internetFilter.addAction("android.net.wifi.STATE_CHANGE");
-        internetFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        registerReceiver(broadcastReceiver, internetFilter);
-    }
 
-    /**
-     *  Runtime Broadcast receiver inner class to capture internet connectivity events
-     */
-    boolean connctn=false;
-    Snackbar snackbar=null;
-    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @SuppressLint("ResourceType")
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager cm =
-                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null &&
-                    activeNetwork.isConnectedOrConnecting();
-            if (isConnected) {
-                try {
-                    if(connctn==false) {
-                        if(snackbar!=null)
-                            snackbar.dismiss();
-                        snackbar = Snackbar
-                                .make(findViewById(R.id.coordinatorlayout), "Connected", Snackbar.LENGTH_SHORT);
-                        snackbar.setActionTextColor(Color.RED);
-                        View sbView = snackbar.getView();
-                        sbView.setBackgroundColor(ContextCompat.getColor(MapsActivity.this,Color.GREEN));
-                        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                        textView.setTextColor(Color.YELLOW);
-                        snackbar.show();
-
-                    }
-                    connctn=true;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Toast.makeText(context, "Network is changed or reconnected", Toast.LENGTH_LONG).show();
-                try {
-                    connctn=false;
-
-                    snackbar = Snackbar
-                            .make(findViewById(R.id.coordinatorlayout), "Cant connect to Wisdom network", Snackbar.LENGTH_INDEFINITE);
-                    snackbar.setActionTextColor(Color.RED);
-
-                    View sbView = snackbar.getView();
-                    sbView.setBackgroundColor(ContextCompat.getColor(MapsActivity.this,Color.RED));
-                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                    textView.setTextColor(Color.YELLOW);
-                    snackbar.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
+    private boolean requestLocationPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(MapsActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_FINE_LOCATION_INTENT_ID);
+            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED)
+                return false;
+            else
+                return true;
+        } else {
         }
-    };
+       return true;
+    }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
@@ -425,6 +402,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+       @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
        void setMyMarker(final LatLng loc)
        {
 
@@ -571,6 +549,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     private class DownloadDp extends AsyncTask<String, Void, Bitmap> {
 
 
