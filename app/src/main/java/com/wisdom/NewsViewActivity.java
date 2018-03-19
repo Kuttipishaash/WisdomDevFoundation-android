@@ -43,6 +43,7 @@ public class NewsViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_view_news);
         toolbar.setTitle(articleHeading);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mToolbarLayout = findViewById(R.id.toolbar_layout_view_news);
 
