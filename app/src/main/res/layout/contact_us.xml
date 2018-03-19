@@ -19,7 +19,7 @@
         android:gravity="center"
         android:orientation="vertical">
 
-
+<!-- TODO: Change ETs to TextInputLayout -->
     <TextView
         android:id="@+id/contact_form_title"
         android:layout_width="wrap_content"
