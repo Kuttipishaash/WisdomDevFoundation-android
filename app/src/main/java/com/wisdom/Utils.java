@@ -8,6 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by praji on 19-Mar-18.
  */
 
+//TODO: Move network check here
+
 public class Utils {
     public static FeedClient getFeedClientRef() {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();

@@ -50,14 +50,7 @@ public class NewsViewActivity extends AppCompatActivity {
         mArticleContent = findViewById(R.id.text_article_content);
         mArticleContent.setText(getIntent().getStringExtra("articleContent"));
 
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl("http://wisdominitiatives.org")
-                .addConverterFactory(GsonConverterFactory.create());
-        Retrofit retrofit = builder
-                .client(httpClient.build())
-                .build();
-        FeedClient feedClient = retrofit.create(FeedClient.class);
+        FeedClient feedClient = Utils.getFeedClientRef();
         Call<FeedImage> imageCall = feedClient.image(getIntent().getStringExtra("articleImageId"));
 
         imageCall.enqueue(new Callback<FeedImage>() {

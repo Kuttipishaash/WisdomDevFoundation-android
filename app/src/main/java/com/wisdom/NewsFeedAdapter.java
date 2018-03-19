@@ -51,15 +51,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
         mArticleHeading.setText(feedItem.getTitle().getRendered());
         mActualContent.setText(feedItem.getExcerpt().getRendered());
 
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl("http://wisdominitiatives.org")
-                .addConverterFactory(GsonConverterFactory.create());
-        Retrofit retrofit = builder
-                .client(httpClient.build())
-                .build();
-
-        FeedClient feedClient = retrofit.create(FeedClient.class);
+        FeedClient feedClient = Utils.getFeedClientRef();
         Call<FeedImage> imageCall = feedClient.image(feedItem.getFeaturedMedia());
 
         imageCall.enqueue(new Callback<FeedImage>() {

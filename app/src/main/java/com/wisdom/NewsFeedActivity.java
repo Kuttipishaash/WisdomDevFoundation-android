@@ -55,14 +55,7 @@ public class NewsFeedActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.prog_newsfeed);
 
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl("http://wisdominitiatives.org")
-                .addConverterFactory(GsonConverterFactory.create());
-        Retrofit retrofit = builder
-                .client(httpClient.build())
-                .build();
-        FeedClient feedClient = retrofit.create(FeedClient.class);
+        FeedClient feedClient = Utils.getFeedClientRef();
         Call<List<FeedItem>> call = feedClient.feeds();
         call.enqueue(new Callback<List<FeedItem>>() {
             @Override
