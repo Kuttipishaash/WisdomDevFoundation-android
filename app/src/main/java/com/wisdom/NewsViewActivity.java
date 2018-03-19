@@ -73,7 +73,7 @@ public class NewsViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<FeedImage> call, Throwable t) {
-
+                //TODO: Include some UI change
             }
         });
 

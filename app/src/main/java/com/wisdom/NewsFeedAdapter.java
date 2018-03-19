@@ -3,6 +3,7 @@ package com.wisdom;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -66,7 +67,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
 
             @Override
             public void onFailure(Call<FeedImage> call, Throwable t) {
-                Toast.makeText(getContext(), "Image load failed", Toast.LENGTH_SHORT).show();
+                //TODO: Include some UI change to reflect failure
             }
         });
 

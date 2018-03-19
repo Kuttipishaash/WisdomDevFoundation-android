@@ -54,6 +54,7 @@ public class NewsFeedActivity extends AppCompatActivity {
         initNavDrawer();
 
         progressBar = findViewById(R.id.prog_newsfeed);
+        mFeedList = findViewById(R.id.list_feed);
 
         FeedClient feedClient = Utils.getFeedClientRef();
         Call<List<FeedItem>> call = feedClient.feeds();
@@ -63,7 +64,6 @@ public class NewsFeedActivity extends AppCompatActivity {
 
                 List<FeedItem> feed = response.body();
 
-                mFeedList = findViewById(R.id.list_feed);
                 mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed);
 
                 mFeedList.setAdapter(mFeedAdapter);
@@ -96,7 +96,6 @@ public class NewsFeedActivity extends AppCompatActivity {
                 view.setVisibility(View.GONE);
 
                 frameLayout.setVisibility(View.VISIBLE);
-                Toast.makeText(NewsFeedActivity.this, "Fail", Toast.LENGTH_SHORT).show();
 
                 fragmentTransaction.commit();
             }
