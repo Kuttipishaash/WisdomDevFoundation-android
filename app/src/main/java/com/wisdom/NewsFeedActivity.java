@@ -55,6 +55,7 @@ public class NewsFeedActivity extends AppCompatActivity {
 
         initNavDrawer();
 
+        //Initialize views
         progressBar = findViewById(R.id.prog_newsfeed);
         mFeedList = findViewById(R.id.list_feed);
 
@@ -62,52 +63,69 @@ public class NewsFeedActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 Intent intent = new Intent(NewsFeedActivity.this, MapsActivity.class);
                 startActivity(intent);
             }
         });
 
+        //Initialize instance of Feedclient with REST call
         FeedClient feedClient = Utils.getFeedClientRef();
+
+        //Initialize Call object for async call of feeds object in FeedClient interface
         Call<List<FeedItem>> call = feedClient.feeds();
+
+        //Start async call
         call.enqueue(new Callback<List<FeedItem>>() {
+
+            //On successful response
             @Override
             public void onResponse(Call<List<FeedItem>> call, Response<List<FeedItem>> response) {
 
+                //Store response to List of FeedItem
                 List<FeedItem> feed = response.body();
 
+                //Initialize adapter and set it to list view
                 mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed);
-
                 mFeedList.setAdapter(mFeedAdapter);
+
+                //Hide progress bar
                 progressBar.setVisibility(View.GONE);
 
+                //On clicking any item in the list, run the following
                 mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        //Get the item that was clicked
                         FeedItem item = mFeedAdapter.getItemClicked(position);
 
+                        //Start NewsViewActivity and pass it extra data
                         Intent intent = new Intent(NewsFeedActivity.this, NewsViewActivity.class);
-                        intent.putExtra("articleHeading", item.getTitle().getRendered());
-                        intent.putExtra("articleContent", item.getContent().getRendered());
-                        intent.putExtra("articleLink", item.getLink());
-                        intent.putExtra("articleImageId", item.getFeaturedMedia());
+                        intent.putExtra("articleHeading", item.getTitle().getRendered()); //heading of article
+                        intent.putExtra("articleContent", item.getContent().getRendered()); //content of article
+                        intent.putExtra("articleLink", item.getLink()); //link of article
+                        intent.putExtra("articleImageId", item.getFeaturedMedia()); //id of image in article
                         startActivity(intent);
                     }
                 });
             }
 
+            //On failed respone
             @Override
             public void onFailure(Call<List<FeedItem>> call, Throwable t) {
+                //Initialize container for no network fragment
                 FrameLayout frameLayout = findViewById(R.id.fragment_newsfeed_container);
 
+                //Initialize fragment of NoNetworkFragment
                 Fragment fragment = new NoNetworkFragment();
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.add(R.id.fragment_newsfeed_container, fragment);
 
+                //Hide the container view of existing news feed view
                 View view = findViewById(R.id.activity_news_container);
                 view.setVisibility(View.GONE);
 
+                //Make fragment container visible
                 frameLayout.setVisibility(View.VISIBLE);
 
                 fragmentTransaction.commit();
