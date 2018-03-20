@@ -23,7 +23,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -33,7 +32,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,25 +39,28 @@
         <activity
             android:name=".MapsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".LocationDetailer"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".ContactUsActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".NewsFeedActivity"
-            android:label="Contact Us"/>
-        <activity android:name=".AboutUsActivity"
-            android:screenOrientation="portrait"
-            android:label="About Us"
-            android:parentActivityName=".NewsFeedActivity"/>
         <activity
+            android:name=".LocationDetailer"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ContactUsActivity"
+            android:label="Contact Us"
+            android:parentActivityName=".NewsFeedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AboutUsActivity"
+            android:label="About Us"
+            android:parentActivityName=".NewsFeedActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".NewsViewActivity"
             android:label="@string/title_activity_news_view"
             android:parentActivityName=".NewsFeedActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

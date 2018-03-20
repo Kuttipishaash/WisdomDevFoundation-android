@@ -96,6 +96,9 @@
         android:layout_width="match_parent"
         android:layout_below="@+id/namerating"
         android:orientation="vertical"
+        android:overScrollMode="ifContentScrolls"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideOverlay"
         android:background="@color/md_white_1000"
         android:layout_height="100dp">
 

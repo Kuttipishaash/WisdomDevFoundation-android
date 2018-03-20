@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -55,6 +57,17 @@ public class NewsFeedActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.prog_newsfeed);
         mFeedList = findViewById(R.id.list_feed);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent intent = new Intent(NewsFeedActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         FeedClient feedClient = Utils.getFeedClientRef();
         Call<List<FeedItem>> call = feedClient.feeds();
