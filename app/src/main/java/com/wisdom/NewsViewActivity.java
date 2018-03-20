@@ -37,23 +37,31 @@ public class NewsViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_view);
 
+        //Initialize views
+        mToolbarLayout = findViewById(R.id.toolbar_layout_view_news);
+        mArticleContent = findViewById(R.id.text_article_content);
+
+        //Get heading, article link and content from the calling intent
         articleHeading = getIntent().getStringExtra("articleHeading");
         articleLink = getIntent().getStringExtra("articleLink");
+        mArticleContent.setText(getIntent().getStringExtra("articleContent"));
 
+        //Initialize toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_view_news);
         toolbar.setTitle(articleHeading);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mToolbarLayout = findViewById(R.id.toolbar_layout_view_news);
-
-        mArticleContent = findViewById(R.id.text_article_content);
-        mArticleContent.setText(getIntent().getStringExtra("articleContent"));
-
+        //Get retrofit instance of FeedClient
         FeedClient feedClient = Utils.getFeedClientRef();
+
+        //Create Call object imageCall and initialize it with obtained feedClient by passing id of image that was obtained from calling intent
         Call<FeedImage> imageCall = feedClient.image(getIntent().getStringExtra("articleImageId"));
 
+        //Start async call
         imageCall.enqueue(new Callback<FeedImage>() {
+
+            //On successful response
             @Override
             public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
                 Glide
@@ -71,12 +79,14 @@ public class NewsViewActivity extends AppCompatActivity {
                         });
             }
 
+            //On failed response
             @Override
             public void onFailure(Call<FeedImage> call, Throwable t) {
                 //TODO: Include some UI change
             }
         });
 
+        //Share button implementation
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_view_news);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
