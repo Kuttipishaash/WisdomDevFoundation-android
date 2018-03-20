@@ -11,9 +11,12 @@ import retrofit2.http.Path;
  */
 
 public interface FeedClient {
+
+    //Acquire newsfeed list
     @GET("/wp-json/wp/v2/posts")
     Call<List<FeedItem>> feeds();
 
+    //Acquire images
     @GET("/wp-json/wp/v2/media/{image}")
     Call<FeedImage> image(@Path("image") String imageId);
 }
