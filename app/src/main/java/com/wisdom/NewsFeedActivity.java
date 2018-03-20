@@ -1,11 +1,11 @@
 package com.wisdom;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -46,6 +48,9 @@ public class NewsFeedActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ProgressBar progressBar;
 
+    FloatingActionMenu materialDesignFAM;
+    FloatingActionButton floatingActionButton1, floatingActionButton2, floatingActionButton3;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +64,35 @@ public class NewsFeedActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.prog_newsfeed);
         mFeedList = findViewById(R.id.list_feed);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(NewsFeedActivity.this, MapsActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+        materialDesignFAM = (FloatingActionMenu) findViewById(R.id.fab);
+        floatingActionButton1 = (FloatingActionButton) findViewById(R.id.fab_maps);
+        floatingActionButton2 = (FloatingActionButton) findViewById(R.id.fab_emg);
+
+        floatingActionButton1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 Intent intent = new Intent(NewsFeedActivity.this, MapsActivity.class);
                 startActivity(intent);
+
             }
         });
+        floatingActionButton2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //TODO something when floating action menu second item clicked
+                Context context = getApplicationContext();
+                CharSequence text = "Hello toast!";
+                Toast toast = Toast.makeText(context, "Upcoming Service", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
 
         //Initialize instance of Feedclient with REST call
         FeedClient feedClient = Utils.getFeedClientRef();
