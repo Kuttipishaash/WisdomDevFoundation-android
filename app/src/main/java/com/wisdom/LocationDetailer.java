@@ -58,6 +58,7 @@ import static android.content.ContentValues.TAG;
 
 public class LocationDetailer extends AppCompatActivity
 {
+
     String type,name,address;
     int num,tot_comments,rating;
     int curr_point,comm_my_pos;
