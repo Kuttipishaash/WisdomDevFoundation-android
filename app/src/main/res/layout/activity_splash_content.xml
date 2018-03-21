@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="285dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:contentDescription="@string/wisdom_logo"
         android:src="@drawable/wisdom_logo"
