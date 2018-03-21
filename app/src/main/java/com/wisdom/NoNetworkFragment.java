@@ -28,7 +28,8 @@ public class NoNetworkFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(getActivity() instanceof NewsFeedActivity) {
-                    startActivity(new Intent(getActivity(), NewsFeedActivity.class));
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(), NewsFeedActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
                 }
             }
         });

@@ -84,12 +84,17 @@ public class NewsFeedActivity extends AppCompatActivity {
                 //Store response to List of FeedItem
                 List<FeedItem> feed = response.body();
 
-                //Initialize adapter and set it to list view
-                mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed);
-                mFeedList.setAdapter(mFeedAdapter);
+                if(mFeedList != null && feed != null) {
 
-                //Hide progress bar
-                progressBar.setVisibility(View.GONE);
+                    //Initialize adapter and set it to list view
+                    mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed);
+                    mFeedList.setAdapter(mFeedAdapter);
+
+                    //Hide progress bar
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    showNetworkFailure();
+                }
 
                 //On clicking any item in the list, run the following
                 mFeedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -110,25 +115,10 @@ public class NewsFeedActivity extends AppCompatActivity {
                 });
             }
 
-            //On failed respone
+            //On failed response
             @Override
             public void onFailure(Call<List<FeedItem>> call, Throwable t) {
-                //Initialize container for no network fragment
-                FrameLayout frameLayout = findViewById(R.id.fragment_newsfeed_container);
-
-                //Initialize fragment of NoNetworkFragment
-                Fragment fragment = new NoNetworkFragment();
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.add(R.id.fragment_newsfeed_container, fragment);
-
-                //Hide the container view of existing news feed view
-                View view = findViewById(R.id.activity_news_container);
-                view.setVisibility(View.GONE);
-
-                //Make fragment container visible
-                frameLayout.setVisibility(View.VISIBLE);
-
-                fragmentTransaction.commit();
+                showNetworkFailure();
             }
         });
     }
@@ -172,6 +162,28 @@ public class NewsFeedActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void showNetworkFailure() {
+        //Initialize container for no network fragment
+        FrameLayout frameLayout = findViewById(R.id.fragment_newsfeed_container);
+
+        //Initialize fragment of NoNetworkFragment
+        Fragment fragment = new NoNetworkFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+    //    fragmentTransaction.disallowAddToBackStack();
+    //    fragmentTransaction.commitAllowingStateLoss();
+        fragmentTransaction.add(R.id.fragment_newsfeed_container, fragment);
+
+        //Hide the container view of existing news feed view
+        View view = findViewById(R.id.activity_news_container);
+        view.setVisibility(View.GONE);
+
+        //Make fragment container visible
+        frameLayout.setVisibility(View.VISIBLE);
+
+        fragmentTransaction.commit();
+
     }
 
     //To open the nav drawer when the menu icon on the action bar is tapped
