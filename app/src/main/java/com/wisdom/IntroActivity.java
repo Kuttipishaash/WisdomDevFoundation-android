@@ -20,7 +20,7 @@ public class IntroActivity extends com.heinrichreimersoftware.materialintro.app.
 
         addSlide(new FragmentSlide.Builder()
                 .background(R.color.md_green_500)
-                .backgroundDark(R.color.md_green_800)
+                .backgroundDark(R.color.md_green_600)
                 .fragment(R.layout.fragment_intro_aim, R.style.Theme_Intro)
                 .build());
 
