@@ -64,6 +64,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.75dp"
+       android:layout_marginBottom="0dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:background="@color/md_grey_200" />
@@ -127,9 +128,10 @@
         <LinearLayout
             android:id="@+id/btn_img_share"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginRight="10dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="30dp"
             android:layout_marginTop="5dp"
+            android:layout_gravity="center_vertical"
             android:gravity="center_vertical">
 
             <ImageView
@@ -144,6 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:layout_gravity="center_vertical"
                 android:text="Share"
                 android:textAllCaps="true"
                 android:textColor="@color/md_grey_500" />
@@ -154,7 +157,7 @@
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
         android:background="@color/md_grey_200" />
 
 </LinearLayout>
