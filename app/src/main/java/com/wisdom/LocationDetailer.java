@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -60,6 +61,8 @@ public class LocationDetailer extends AppCompatActivity
 {
 
     String type,name,address;
+    private static final String PREF_FILE = "UserPreferences";
+
     int num,tot_comments,rating;
     int curr_point,comm_my_pos;
     boolean commented,listed,commenting;
@@ -77,7 +80,8 @@ public class LocationDetailer extends AppCompatActivity
         listed=false;
         setContentView(R.layout.bottom_sheet_content);
         Bundle extras = getIntent().getExtras();
-        uid="1";
+        SharedPreferences user_uid=getSharedPreferences(PREF_FILE,MODE_PRIVATE);
+        uid=user_uid.getString("user_id","0");
         comm_my_pos=-1;
         String value1 = extras.getString(Intent.EXTRA_TEXT);
         comments=new ArrayList<Locations.Comments>();
@@ -186,7 +190,57 @@ public class LocationDetailer extends AppCompatActivity
         setDetails();
         setComments();
         setDescription();
+        setRating();
         checkCommented();
+    }
+    void setRating()
+    {
+        ImageView rating_iv=(ImageView)findViewById(R.id.rating);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("");
+        myRef.child("Locations").child(num+"").child("rating").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                String rate_name = "";
+                switch (Integer.parseInt(dataSnapshot.getValue().toString()))
+                {
+                    case 1:     rate_name="terrible";
+                        break;
+
+                    case 2:     rate_name="bad";
+                        break;
+
+                    case 3:     rate_name="okay";
+                        break;
+
+                    case 4:     rate_name="good";
+                        break;
+
+                    case 5:     rate_name="great";
+                        break;
+
+                    default:    rate_name="norating";
+                }
+
+                String uri = "@drawable/";  // where myresource (without the extension) is the file
+
+                int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                ImageView imageview= (ImageView)findViewById(R.id.rating);
+                Drawable drawable = getResources().getDrawable(getResources().getIdentifier(rate_name, "drawable", getPackageName()));
+                imageview.setImageDrawable(drawable);
+
+
+
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+
     }
     void setDetails()
     {

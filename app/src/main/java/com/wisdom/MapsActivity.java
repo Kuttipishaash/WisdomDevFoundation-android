@@ -141,6 +141,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationListenSet();
         bottomSheetSetup();
         loading=(SmoothProgressBar) findViewById(R.id.loading1);
+        loading.setVisibility(View.VISIBLE);
         home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
         final SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
         progressBar = new ProgressDialog(this);
