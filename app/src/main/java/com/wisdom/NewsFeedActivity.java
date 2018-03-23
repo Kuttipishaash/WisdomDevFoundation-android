@@ -252,4 +252,6 @@ public class NewsFeedActivity extends AppCompatActivity {
                 });
 
     }
+
+
 }
