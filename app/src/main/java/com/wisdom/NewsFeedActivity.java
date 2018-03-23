@@ -87,7 +87,6 @@ public class NewsFeedActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //TODO something when floating action menu second item clicked
                 Context context = getApplicationContext();
-                CharSequence text = "Hello toast!";
                 Toast toast = Toast.makeText(context, "Upcoming Service", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -175,6 +174,12 @@ public class NewsFeedActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_map:
                         startActivity(new Intent(NewsFeedActivity.this, MapsActivity.class));
+                        break;
+                    case  R.id.emg_srv:
+                        //TODO:Implement Emergency Health Service
+                        Context context = getApplicationContext();
+                        Toast toast = Toast.makeText(context, "Upcoming Service", Toast.LENGTH_SHORT);
+                        toast.show();
                         break;
                     case R.id.nav_share:
                         //TODO:Share app functionality

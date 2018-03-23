@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 /**
  * Created by praji on 2/22/2018.
  */
@@ -32,7 +35,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
     private List<FeedItem> feedItemsList;
 
     public NewsFeedAdapter(Context context, int resource, List<FeedItem> objects) {
-        super(context,resource,objects);
+        super(context, resource, objects);
 
         feedItemsList = objects;
     }
@@ -60,8 +63,13 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
             public void onResponse(Call<FeedImage> call, Response<FeedImage> response) {
                 FeedImage image = response.body();
 
-                Glide.with(getContext().getApplicationContext())       //Using getApplicationContext() inorder to prevent crashing while logging out before images in list are loaded.
+                Glide.with(getContext().getApplicationContext())//Using getApplicationContext() inorder to prevent crashing while logging out before images in list are loaded.
                         .load(image.getGuid().getRendered())
+                        .thumbnail(0.1f)
+                        .transition(withCrossFade())
+                        .apply(new RequestOptions().override(300, 300)
+                                .placeholder(R.drawable.placeholder)
+                                .error(R.drawable.icon_black).centerCrop())
                         .into(mThumb);
             }
 
@@ -88,7 +96,7 @@ public class NewsFeedAdapter extends ArrayAdapter<FeedItem> {
         return view;
     }
 
-    public FeedItem getItemClicked(int position){
+    public FeedItem getItemClicked(int position) {
         return feedItemsList.get(position);
     }
 }
