@@ -176,7 +176,7 @@ public class NewsFeedActivity extends AppCompatActivity {
                         startActivity(new Intent(NewsFeedActivity.this, MapsActivity.class));
                         break;
                     case  R.id.emg_srv:
-                        //TODO:Implement Emergency Health Service
+                        //TODO:Implement Emergency Health Serviceapp functionality
                         Context context = getApplicationContext();
                         Toast toast = Toast.makeText(context, "Upcoming Service", Toast.LENGTH_SHORT);
                         toast.show();
