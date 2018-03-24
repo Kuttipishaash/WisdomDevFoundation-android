@@ -339,7 +339,9 @@ public class LocationDetailer extends AppCompatActivity
                 listView=findViewById(R.id.comments);
                 i=0;
                 final DataSnapshot finds=dataSnapshot;
-                View cmmlist=findViewById(R.id.comment_list);
+                View cmmlist=findViewById(R.id.comments);
+                View cmmtv=findViewById(R.id.comment_tv);
+
                 View nocomments=findViewById(R.id.nocomments);
                 Log.d("Comments datass:", "datasnapshot childcount: "+dataSnapshot.getChildrenCount()+"Comments data:  "+comments.size());
                 if(dataSnapshot.getChildrenCount()==0)
@@ -347,13 +349,17 @@ public class LocationDetailer extends AppCompatActivity
                     progressBar.setVisibility(View.INVISIBLE);
                     nocomments.setVisibility(View.VISIBLE);
                     cmmlist.setVisibility(View.INVISIBLE);
+                    cmmtv.setVisibility(View.INVISIBLE);
                 }
                 else
                 {
                     if(cmmlist.getVisibility()==View.INVISIBLE)
                     {
+
                         nocomments.setVisibility(View.INVISIBLE);
                         cmmlist.setVisibility(View.VISIBLE);
+                        cmmtv.setVisibility(View.VISIBLE);
+
                     }
                     comments.clear();
                     for (final DataSnapshot ds : dataSnapshot.getChildren())
