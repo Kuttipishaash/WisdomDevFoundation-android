@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -31,25 +30,19 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewsFeedActivity extends AppCompatActivity {
 
     private static final String PREF_FILE = "UserPreferences";
-
-    private ListView mFeedList;
-    private NewsFeedAdapter mFeedAdapter;
-
-    private DrawerLayout mDrawerLayout;
-    private ProgressBar progressBar;
-
     FloatingActionMenu materialDesignFAM;
     FloatingActionButton floatingActionButton1, floatingActionButton2, floatingActionButton3;
+    private ListView mFeedList;
+    private NewsFeedAdapter mFeedAdapter;
+    private DrawerLayout mDrawerLayout;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,9 +65,9 @@ public class NewsFeedActivity extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
-        materialDesignFAM = (FloatingActionMenu) findViewById(R.id.fab);
-        floatingActionButton1 = (FloatingActionButton) findViewById(R.id.fab_maps);
-        floatingActionButton2 = (FloatingActionButton) findViewById(R.id.fab_emg);
+        materialDesignFAM = findViewById(R.id.fab);
+        floatingActionButton1 = findViewById(R.id.fab_maps);
+        floatingActionButton2 = findViewById(R.id.fab_emg);
 
         floatingActionButton1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -252,7 +245,8 @@ public class NewsFeedActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         // user is now signed out
                         finish();
-                        startActivity(new Intent(NewsFeedActivity.this, SplashActivity.class));
+                        startActivity(new Intent(NewsFeedActivity.this, LoginActivity.class));
+                        Toast.makeText(NewsFeedActivity.this, "Signed out", Toast.LENGTH_SHORT).show();
                     }
                 });
 
