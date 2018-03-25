@@ -111,7 +111,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      Institution one,two,three;
     CommentAdapter commentLister = null;
     GoogleMap mMap=null,statmMap;
-    int current_i;
+    int current_i,dwnld_count=0;
     ProgressDialog progressBar;
     SmoothProgressBar loading = null;
     boolean flag;
@@ -123,22 +123,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences dpuri=getSharedPreferences(PREF_FILE,MODE_PRIVATE);
         dp_url=dpuri.getString("user_image_url","");
         setContentView(R.layout.activity_maps);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (!requestLocationPermission()) {
-                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(MapsActivity.this, "You need to give location access for access map", LENGTH_LONG).show();
-                        finish();
-                    }
-                }
-            }
-
-        }
-        locationListenSet();
+        if(requestLocationPermission()==true)
+            locationListenSet();
         bottomSheetSetup();
         loading=(SmoothProgressBar) findViewById(R.id.loading1);
         loading.setVisibility(View.VISIBLE);
@@ -155,6 +141,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         progressBar.setCancelable(false);
 
         cur_location = null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(ActivityCompat.checkSelfPermission(this, permissions[0]) != PackageManager.PERMISSION_GRANTED) {
+        Toast.makeText(this,"You need to give location access",LENGTH_LONG).show();
+        finish();
+        }
+        else
+        {
+            locationListenSet();
+        }
     }
 
     private boolean requestLocationPermission() {
@@ -180,6 +179,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         statmMap = mMap;
         //setMyMarker(cur_location);
       //  drawRoute();
+        loading.setVisibility(View.VISIBLE);
         home_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,7 +270,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     void retrieveTheNearServices()
     {
-        loading.setVisibility(View.VISIBLE);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
         /////Toilet data
@@ -315,7 +314,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     }
                     if(locations.size()==0) {
-                        loading.setVisibility(View.INVISIBLE);
+                        ++dwnld_count;
+                        if(dwnld_count==2)
+                            loading.setVisibility(View.INVISIBLE);
                         snackbar = Snackbar
                                 .make(findViewById(R.id.coordinatorlayout), "No service found nearby", Snackbar.LENGTH_INDEFINITE);
                         snackbar.setActionTextColor(Color.RED);
@@ -388,7 +389,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMarker=mMap.addMarker(options);
                     if(finalI1 ==locations.size()-1)
                     {
-                        loading.setVisibility(View.INVISIBLE);
+                        ++dwnld_count;
+                        if(dwnld_count==2)
+                            loading.setVisibility(View.INVISIBLE);
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -581,7 +584,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             LatLng ll = new LatLng(cur_location.latitude,cur_location.longitude);
             MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
             my_marker=mMap.addMarker(options);
-            loading.setVisibility(View.INVISIBLE);
-        }
+            ++dwnld_count;
+            if(dwnld_count==2)
+                loading.setVisibility(View.INVISIBLE);        }
     }
 }

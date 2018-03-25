@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -71,6 +73,7 @@ public class LocationDetailer extends AppCompatActivity
     private Animator mCurrentAnimator;
     int mShortAnimationDuration;
     CommentAdapter commentAdapter;
+    AlertDialog alertDialog;
     String uid;
     ArrayList<Locations.Comments> comments;
     @Override
@@ -78,6 +81,34 @@ public class LocationDetailer extends AppCompatActivity
         super.onCreate(savedInstanceState);
         my_comment=new Locations.Comments();
         listed=false;
+        alertDialog = new AlertDialog.Builder(
+                LocationDetailer.this).create();
+
+        // Setting Dialog Title
+        alertDialog.setTitle("Login please");
+
+        // Setting Dialog Message
+        alertDialog.setMessage("You need to login for comment about the service");
+
+        // Setting Icon to Dialog
+        alertDialog.setIcon(R.drawable.cantcomment);
+
+        // Setting OK Button
+        alertDialog.setButton("Not now",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+
+        });
+        alertDialog.setButton("Login",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent login=new Intent(LocationDetailer.this,SplashActivity.class);
+                startActivity(login);
+            }
+
+        });
+        // Showing Alert Message
         setContentView(R.layout.bottom_sheet_content);
         Bundle extras = getIntent().getExtras();
         SharedPreferences user_uid=getSharedPreferences(PREF_FILE,MODE_PRIVATE);
@@ -104,78 +135,80 @@ public class LocationDetailer extends AppCompatActivity
             {
                 if(commenting==false)
                     {
-                        commenting=true;
-                        addcomment.setVisibility(View.VISIBLE);
-                        Button entercomment=(Button)addcomment.findViewById(R.id.entercomment);
-                        entercomment.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                final boolean[] rated = {false};
-                                EditText comment=(EditText)addcomment.findViewById(R.id.editText2);
-                                SmileRating sr=(SmileRating)addcomment.findViewById(R.id.smile_rating);
-
-                                if(comment.getText().toString().equals(""))
-                                {
-                                    Toast.makeText(LocationDetailer.this,"Enter a comment",Toast.LENGTH_LONG).show();
-                                }
-                                else if(sr.equals(0))
-                                {
-                                    Toast.makeText(LocationDetailer.this,"Rate us how you feel",Toast.LENGTH_LONG).show();
-                                }
-                                else {
-                                    Toast.makeText(LocationDetailer.this,"Thank you",Toast.LENGTH_LONG).show();
-                                    int rating=sr.getRating();
-                                    if(rating==0)
-                                        rating=1;
-                                    final ProgressBar progressBar = findViewById(R.id.comment_progress);
-                                    progressBar.setVisibility(View.VISIBLE);
-
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    final DatabaseReference myRef = database.getReference("");
-                                    myRef.child("Comments").child(num + "").child(uid).child("text").setValue(comment.getText().toString());
-                                    myRef.child("Comments").child(num + "").child(uid).child("rating").setValue(rating);
-                                    myRef.child("Comments").child(num + "").child(uid).child("person").setValue(uid);
-                                    myRef.child("Comments").child(num + "").addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            int i = 0;
-                                            float sum = 0, avg;
-                                            final DataSnapshot finds = dataSnapshot;
-                                            for (final DataSnapshot ds : dataSnapshot.getChildren()) {
-                                                ++i;
-                                                sum += Integer.parseInt(ds.child("rating").getValue().toString());
-                                            }
-                                            avg = sum / i;
-                                            avg = (float) (avg + 0.5);
-                                            int rate = (int) avg;
-                                            myRef.child("Locations").child(num + "").child("rating").setValue(rate);
-                                            commenting = false;
-                                            addcomment.setVisibility(View.INVISIBLE);
-                                            commentlist.setVisibility(View.VISIBLE);
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                          //  comments = new ArrayList<Locations.Comments>();
-                                        //    if(commentAdapter!=null)
-                                        //      commentAdapter.notifyDataSetChanged();
-                                          setComments();
-                                            checkCommented();
-                                        }
-                                        @Override
-                                        public void onCancelled(DatabaseError error) {
-                                            // Failed to read value
-                                            Log.w(TAG, "Failed to read value.", error.toException());
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                        commentlist.setVisibility(View.INVISIBLE);
-                        if(commented==true)
+                        SmileRating sr = (SmileRating) addcomment.findViewById(R.id.smile_rating);
+                        sr.setSelectedSmile(3);
+                        if(uid.equals("0"))
                         {
-                            EditText comment=(EditText)addcomment.findViewById(R.id.editText2);
-                            SmileRating sr=(SmileRating)addcomment.findViewById(R.id.smile_rating);
-                            comment.setText(my_comment.text);
-                            sr.setSelectedSmile(my_comment.rating);
+                            alertDialog.show();
+                        }
+                        else {
+                            commenting = true;
+                            addcomment.setVisibility(View.VISIBLE);
+                            Button entercomment = (Button) addcomment.findViewById(R.id.entercomment);
+                            entercomment.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final boolean[] rated = {false};
+                                    EditText comment = (EditText) addcomment.findViewById(R.id.editText2);
+                                    SmileRating sr = (SmileRating) addcomment.findViewById(R.id.smile_rating);
+
+                                    if (comment.getText().toString().equals("")) {
+                                        Toast.makeText(LocationDetailer.this, "Enter a comment", Toast.LENGTH_LONG).show();
+                                    } else if (sr.equals(0)) {
+                                        Toast.makeText(LocationDetailer.this, "Rate us how you feel", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(LocationDetailer.this, "Thank you", Toast.LENGTH_LONG).show();
+                                        int rating = sr.getRating();
+                                        if (rating == 0)
+                                            rating = 1;
+                                        final ProgressBar progressBar = findViewById(R.id.comment_progress);
+                                        progressBar.setVisibility(View.VISIBLE);
+
+                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        final DatabaseReference myRef = database.getReference("");
+                                        myRef.child("Comments").child(num + "").child(uid).child("text").setValue(comment.getText().toString());
+                                        myRef.child("Comments").child(num + "").child(uid).child("rating").setValue(rating);
+                                        myRef.child("Comments").child(num + "").child(uid).child("person").setValue(uid);
+                                        myRef.child("Comments").child(num + "").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                int i = 0;
+                                                float sum = 0, avg;
+                                                final DataSnapshot finds = dataSnapshot;
+                                                for (final DataSnapshot ds : dataSnapshot.getChildren()) {
+                                                    ++i;
+                                                    sum += Integer.parseInt(ds.child("rating").getValue().toString());
+                                                }
+                                                avg = sum / i;
+                                                avg = (float) (avg + 0.5);
+                                                int rate = (int) avg;
+                                                myRef.child("Locations").child(num + "").child("rating").setValue(rate);
+                                                commenting = false;
+                                                addcomment.setVisibility(View.INVISIBLE);
+                                                commentlist.setVisibility(View.VISIBLE);
+                                                progressBar.setVisibility(View.INVISIBLE);
+                                                //  comments = new ArrayList<Locations.Comments>();
+                                                //    if(commentAdapter!=null)
+                                                //      commentAdapter.notifyDataSetChanged();
+                                                setComments();
+                                                checkCommented();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError error) {
+                                                // Failed to read value
+                                                Log.w(TAG, "Failed to read value.", error.toException());
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                            commentlist.setVisibility(View.INVISIBLE);
+                            if (commented == true) {
+                                EditText comment = (EditText) addcomment.findViewById(R.id.editText2);
+                                comment.setText(my_comment.text);
+                                sr.setSelectedSmile(my_comment.rating);
+                            }
                         }
 
                     }
