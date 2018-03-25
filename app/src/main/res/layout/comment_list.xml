@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="85dp"
+    android:layout_height="wrap_content"
+    android:minHeight="90dp"
     android:background="@drawable/list_round_bg"
     android:elevation="2dp">
 
@@ -19,9 +20,13 @@
         app:civ_border_width="2dp" />
 
     <LinearLayout
-        android:layout_width="195dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:minWidth="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toRightOf="@+id/comment_dp"
+        android:layout_toLeftOf="@+id/reaction"
         android:orientation="vertical">
 
         <TextView
@@ -30,7 +35,7 @@
             android:layout_height="25dp"
             android:layout_weight="1"
             android:layout_marginTop="8dp"
-            android:text="TextView"
+            android:text="User Name"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"/>
@@ -40,22 +45,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:text="TextView"
+            android:text="Comment_Comment"
             android:textSize="15sp"
+            android:layout_marginBottom="5dp"
             android:textColor="@android:color/black" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/reaction"
-        android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginRight="12dp"
-        android:layout_weight="1"
-        android:src="@drawable/great"
-        app:srcCompat="@android:color/transparent" />
-</LinearLayout>
+        android:layout_width="50dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/great"/>
+</RelativeLayout>
