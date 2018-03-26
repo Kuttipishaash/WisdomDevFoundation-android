@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -128,6 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                         mEditor.putString("user_image_url", "");
                     }
                     mEditor.putString("user_id", firebaseUser.getUid());
+                    mEditor.putString("user_name", firebaseUser.getDisplayName());
                     mEditor.putString("user_email", firebaseUser.getEmail());
                     mEditor.apply();
 
