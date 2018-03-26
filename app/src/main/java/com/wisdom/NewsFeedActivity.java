@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,11 +39,13 @@ public class NewsFeedActivity extends AppCompatActivity {
 
     private static final String PREF_FILE = "UserPreferences";
     FloatingActionMenu materialDesignFAM;
-    FloatingActionButton floatingActionButton1, floatingActionButton2, floatingActionButton3;
+    FloatingActionButton floatingActionButton1, floatingActionButton2;
     private ListView mFeedList;
     private NewsFeedAdapter mFeedAdapter;
     private DrawerLayout mDrawerLayout;
     private ProgressBar progressBar;
+
+    private static long back_pressed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +57,14 @@ public class NewsFeedActivity extends AppCompatActivity {
         initNavDrawer();
 
         //Initialize views
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+
+        Menu menu = navigationView.getMenu();
+
+        MenuItem usr_label = menu.findItem(R.id.nv_user_logged_in);
+//        TODO: Add Logged In User Name
+        usr_label.setTitle("Logged in as "+ "USER NAME" );
+
         progressBar = findViewById(R.id.prog_newsfeed);
         mFeedList = findViewById(R.id.list_feed);
 
@@ -102,7 +113,7 @@ public class NewsFeedActivity extends AppCompatActivity {
                 //Store response to List of FeedItem
                 List<FeedItem> feed = response.body();
 
-                if(mFeedList != null && feed != null) {
+                if (mFeedList != null && feed != null) {
 
                     //Initialize adapter and set it to list view
                     mFeedAdapter = new NewsFeedAdapter(NewsFeedActivity.this, R.layout.item_newsfeed, feed);
@@ -168,7 +179,7 @@ public class NewsFeedActivity extends AppCompatActivity {
                     case R.id.nav_map:
                         startActivity(new Intent(NewsFeedActivity.this, MapsActivity.class));
                         break;
-                    case  R.id.emg_srv:
+                    case R.id.emg_srv:
                         //TODO:Implement Emergency Health Serviceapp functionality
                         Context context = getApplicationContext();
                         Toast toast = Toast.makeText(context, "Upcoming Service", Toast.LENGTH_SHORT);
@@ -195,8 +206,8 @@ public class NewsFeedActivity extends AppCompatActivity {
         //Initialize fragment of NoNetworkFragment
         Fragment fragment = new NoNetworkFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-    //    fragmentTransaction.disallowAddToBackStack();
-    //    fragmentTransaction.commitAllowingStateLoss();
+        //    fragmentTransaction.disallowAddToBackStack();
+        //    fragmentTransaction.commitAllowingStateLoss();
         fragmentTransaction.add(R.id.fragment_newsfeed_container, fragment);
 
         //Hide the container view of existing news feed view
@@ -226,9 +237,10 @@ public class NewsFeedActivity extends AppCompatActivity {
         //To close nav drawer on back button press in case the drawer is open
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        } else if (back_pressed + 2000 > System.currentTimeMillis()) super.onBackPressed();
+        else
+            Toast.makeText(getBaseContext(), "Press once again to exit!", Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
     }
 
     //Function to logout using Firebase AuthUI

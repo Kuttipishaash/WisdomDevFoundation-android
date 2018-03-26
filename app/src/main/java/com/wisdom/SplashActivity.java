@@ -7,8 +7,6 @@ import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
-import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -50,8 +48,8 @@ public class SplashActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(SplashActivity.this, "onCreate", Toast.LENGTH_SHORT).show();
                     updateUI();
+                    finish();
                 }
             }, SPLASH_TIMEOUT);
         }

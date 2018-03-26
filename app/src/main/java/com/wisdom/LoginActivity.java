@@ -30,19 +30,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
+import com.wang.avi.AVLoadingIndicatorView;
 
 public class LoginActivity extends AppCompatActivity {
 
     public static final int RC_GOOGLE_SIGN_IN = 1;
     public static final String TAG = "LoginActivity";
 
+    private static long back_pressed;
+
     GoogleSignInClient mGoogleSignInClient;
     GoogleSignInButton mGoogleSignInButton;
     GoogleApiClient mGoogleApiClient;
 
-    LinearLayout mEmailSignInButton;
+    AVLoadingIndicatorView progressbar;
+
+    Button mEmailSignInButton;
     TextView mEmailSignUpButton;
-    LinearLayout mAnonymousSignInButton;
+    Button mAnonymousSignInButton;
 
     View mButtonsPage;
     View mEmailPage;
@@ -134,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordEditText = findViewById(R.id.et_password);
         mSubmitEmailLogin = findViewById(R.id.btn_submit_email_signin);
         mSubmitEmailSignUp = findViewById(R.id.btn_submit_email_signup);
+        progressbar=findViewById(R.id.pulse_bar);
     }
 
 
@@ -188,6 +194,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void anonymousSignIn() {
+        progressbar.setVisibility(View.VISIBLE);
         mFirebaseAuth.signInAnonymously()
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -256,6 +263,7 @@ public class LoginActivity extends AppCompatActivity {
     private void googleSignIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+        progressbar.setVisibility(View.VISIBLE);
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
@@ -277,5 +285,11 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void onBackPressed(){
+        if (back_pressed + 2000 > System.currentTimeMillis())super.onBackPressed();
+        else Toast.makeText(getBaseContext(), "Press once again to exit!", Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
     }
 }
