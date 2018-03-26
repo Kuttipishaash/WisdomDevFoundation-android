@@ -182,6 +182,8 @@
                     android:layout_height="220dp"
                     android:background="@android:color/transparent"
                     android:divider="@android:color/transparent"
+                    android:fastScrollAlwaysVisible="true"
+                    android:fastScrollEnabled="true"
                     android:dividerHeight="2dp" />
 
                 <Button

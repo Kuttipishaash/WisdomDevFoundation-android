@@ -154,9 +154,7 @@ public class LocationDetailer extends AppCompatActivity
 
                                     if (comment.getText().toString().equals("")) {
                                         Toast.makeText(LocationDetailer.this, "Enter a comment", Toast.LENGTH_LONG).show();
-                                    } else if (sr.equals(0)) {
-                                        Toast.makeText(LocationDetailer.this, "Rate us how you feel", Toast.LENGTH_LONG).show();
-                                    } else {
+                                    }else {
                                         Toast.makeText(LocationDetailer.this, "Thank you", Toast.LENGTH_LONG).show();
                                         int rating = sr.getRating();
                                         if (rating == 0)
@@ -221,7 +219,8 @@ public class LocationDetailer extends AppCompatActivity
             }
         });
         setDetails();
-        setComments();
+        if(!uid.equals(0))
+         setComments();
         setDescription();
         setRating();
         checkCommented();
@@ -376,7 +375,6 @@ public class LocationDetailer extends AppCompatActivity
                 View cmmtv=findViewById(R.id.comment_tv);
 
                 View nocomments=findViewById(R.id.nocomments);
-                Log.d("Comments datass:", "datasnapshot childcount: "+dataSnapshot.getChildrenCount()+"Comments data:  "+comments.size());
                 if(dataSnapshot.getChildrenCount()==0)
                 {
                     progressBar.setVisibility(View.INVISIBLE);
@@ -433,7 +431,6 @@ public class LocationDetailer extends AppCompatActivity
                                 Log.w(TAG, "Failed to read value.", error.toException());
                             }
                         });
-                        Log.d("Comments adapt:", cmmnts.rating + "   " + cmmnts.text + "  ");
 
                     }
                 }

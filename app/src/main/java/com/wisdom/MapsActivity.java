@@ -1,5 +1,7 @@
 package com.wisdom;
 
+import android.*;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -113,8 +115,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences dpuri = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
         dp_url = dpuri.getString("user_image_url", "");
         setContentView(R.layout.activity_maps);
-        if (requestLocationPermission() == true)
+        if (hasPermission()== true)
             locationListenSet();
+        else
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},131);
+        }
         bottomSheetSetup();
         loading = (SmoothProgressBar) findViewById(R.id.loading1);
         loading.setVisibility(View.VISIBLE);
@@ -137,32 +143,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (ActivityCompat.checkSelfPermission(this, permissions[0]) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "You need to give location access", LENGTH_LONG).show();
+            Toast.makeText(this, "Please Grant Location Permission in Order Use Service", LENGTH_LONG).show();
             finish();
         } else {
             locationListenSet();
         }
     }
-
-    private boolean requestLocationPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_FINE_LOCATION_INTENT_ID);
-            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED)
-                return false;
-            else
-                return true;
-        } else {
+    boolean hasPermission()
+    {
+        boolean hasallpermission=true;
+        Context context=MapsActivity.this;
+        int res=context.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if(res!=PackageManager.PERMISSION_GRANTED)
+        {
+            hasallpermission=false;
         }
-        return true;
+        return hasallpermission;
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        Toast.makeText(this, "map ready", LENGTH_LONG).show();
         mMap = googleMap;
         statmMap = mMap;
         //setMyMarker(cur_location);
@@ -263,7 +263,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (dataSnapshot.getChildrenCount() != 0)
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         ++i;
-                        if (30 > getDistanceFromLatLonInKm(cur_location.latitude, cur_location.longitude,
+                        if (35 > getDistanceFromLatLonInKm(cur_location.latitude, cur_location.longitude,
                                 Double.parseDouble(ds.child("lat").getValue().toString()),
                                 Double.parseDouble(ds.child("lng" +
                                         "").getValue().toString()))) {
