@@ -47,12 +47,16 @@ public class NewsFeedActivity extends AppCompatActivity {
 
     private static long back_pressed;
 
+    String usr_nme="";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
 
         setTitle("News");
+        SharedPreferences usr_name=getSharedPreferences(PREF_FILE, MODE_PRIVATE);
+        usr_nme=usr_name.getString("user_name", "");
 
         initNavDrawer();
 
@@ -63,7 +67,7 @@ public class NewsFeedActivity extends AppCompatActivity {
 
         MenuItem usr_label = menu.findItem(R.id.nv_user_logged_in);
 //        TODO: Add Logged In User Name
-        usr_label.setTitle("Logged in as "+ "USER NAME" );
+        usr_label.setTitle("Logged in as "+ usr_name );
 
         progressBar = findViewById(R.id.prog_newsfeed);
         mFeedList = findViewById(R.id.list_feed);
