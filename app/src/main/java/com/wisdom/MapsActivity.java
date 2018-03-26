@@ -1,13 +1,10 @@
 package com.wisdom;
 
-import android.*;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,8 +14,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,20 +27,17 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.test.mock.MockPackageManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,11 +62,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 
 import static android.content.ContentValues.TAG;
 import static android.widget.Toast.LENGTH_LONG;
@@ -84,34 +74,34 @@ import static android.widget.Toast.LENGTH_LONG;
  */
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-    public LocationManager mLocationManager = null;
-    SupportMapFragment  mapFragment;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
-    String cur_typ;
     private static final String PREF_FILE = "UserPreferences";
-    String dp_url="";
+    private static final int ACCESS_FINE_LOCATION_INTENT_ID = 3;
+    public LocationManager mLocationManager = null;
+    SupportMapFragment mapFragment;
+    String cur_typ;
+    String dp_url = "";
     Marker mMarker;
     Snackbar snackbar;
-    private static final int ACCESS_FINE_LOCATION_INTENT_ID = 3;
     FloatingActionButton home_gps;
-    ArrayList<Integer> lwr_activities=new ArrayList<Integer>();
-    ArrayList<Integer> upr_activities=new ArrayList<Integer>();
-    Marker my_marker=null;
-    LatLng cur_location=null;
-    LatLng destination=null;
-    ArrayList<Institution> toilets=new ArrayList<Institution>();
-    ArrayList<Institution> garbage=new ArrayList<Institution>();
-    ArrayList<Institution> healthcare=new ArrayList<Institution>();
-    ArrayList<Locations> locations=new ArrayList<Locations>();
+    ArrayList<Integer> lwr_activities = new ArrayList<Integer>();
+    ArrayList<Integer> upr_activities = new ArrayList<Integer>();
+    Marker my_marker = null;
+    LatLng cur_location = null;
+    LatLng destination = null;
+    ArrayList<Institution> toilets = new ArrayList<Institution>();
+    ArrayList<Institution> garbage = new ArrayList<Institution>();
+    ArrayList<Institution> healthcare = new ArrayList<Institution>();
+    ArrayList<Locations> locations = new ArrayList<Locations>();
     BottomSheetBehavior<View> mBottomSheetBehavior1;
     boolean bs_up;
     View bottomSheet;
-    CircleImageView u_dp=null;
-     Institution one,two,three;
+    CircleImageView u_dp = null;
+    Institution one, two, three;
     CommentAdapter commentLister = null;
-    GoogleMap mMap=null,statmMap;
-    int current_i,dwnld_count=0;
+    GoogleMap mMap = null, statmMap;
+    int current_i, dwnld_count = 0;
     ProgressDialog progressBar;
     SmoothProgressBar loading = null;
     boolean flag;
@@ -120,13 +110,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flag = false;
-        SharedPreferences dpuri=getSharedPreferences(PREF_FILE,MODE_PRIVATE);
-        dp_url=dpuri.getString("user_image_url","");
+        SharedPreferences dpuri = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
+        dp_url = dpuri.getString("user_image_url", "");
         setContentView(R.layout.activity_maps);
-        if(requestLocationPermission()==true)
+        if (requestLocationPermission() == true)
             locationListenSet();
         bottomSheetSetup();
-        loading=(SmoothProgressBar) findViewById(R.id.loading1);
+        loading = (SmoothProgressBar) findViewById(R.id.loading1);
         loading.setVisibility(View.VISIBLE);
         home_gps = (FloatingActionButton) findViewById(R.id.gps_home);
         final SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
@@ -146,12 +136,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(ActivityCompat.checkSelfPermission(this, permissions[0]) != PackageManager.PERMISSION_GRANTED) {
-        Toast.makeText(this,"You need to give location access",LENGTH_LONG).show();
-        finish();
-        }
-        else
-        {
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "You need to give location access", LENGTH_LONG).show();
+            finish();
+        } else {
             locationListenSet();
         }
     }
@@ -169,45 +157,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return true;
         } else {
         }
-       return true;
+        return true;
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        Toast.makeText(this,"map ready",LENGTH_LONG).show();
+        Toast.makeText(this, "map ready", LENGTH_LONG).show();
         mMap = googleMap;
         statmMap = mMap;
         //setMyMarker(cur_location);
-      //  drawRoute();
+        //  drawRoute();
         loading.setVisibility(View.VISIBLE);
         home_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bs_up==false)
-                {
-                    if (cur_location != null)
-                    {
-                        CameraUpdate location=CameraUpdateFactory.newLatLngZoom(cur_location,15);
+                if (bs_up == false) {
+                    if (cur_location != null) {
+                        CameraUpdate location = CameraUpdateFactory.newLatLngZoom(cur_location, 15);
                         mMap.animateCamera(location);
                     }
-                }
-                else
-                {
+                } else {
                     Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                            Uri.parse("http://maps.google.com/maps?saddr="+cur_location.latitude
-                                      +","+cur_location.longitude+"&daddr="+locations.get(current_i).loc.latitude+","+locations.get(current_i).loc.longitude+""));
-                    startActivity(intent);                }
+                            Uri.parse("http://maps.google.com/maps?saddr=" + cur_location.latitude
+                                    + "," + cur_location.longitude + "&daddr=" + locations.get(current_i).loc.latitude + "," + locations.get(current_i).loc.longitude + ""));
+                    startActivity(intent);
+                }
             }
         });
-    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                if(marker.getSnippet().equals("HAHA"))
-                {
-                    Toast.makeText(MapsActivity.this,"You are here!",LENGTH_LONG).show();
-                }
-                else {
-                    bs_up=true;
+                if (marker.getSnippet().equals("HAHA")) {
+                    Toast.makeText(MapsActivity.this, "You are here!", LENGTH_LONG).show();
+                } else {
+                    bs_up = true;
                     current_i = Integer.parseInt(marker.getSnippet());
                     //home_gps.setImageResource(R.drawable.toilet);
                     mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -268,43 +251,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    void retrieveTheNearServices()
-    {
+    void retrieveTheNearServices() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("");
         /////Toilet data
         myRef.child("Locations").addValueEventListener(new ValueEventListener() {
             @SuppressLint("ResourceType")
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                int i=0;
-                if(dataSnapshot.getChildrenCount()!=0)
-                for(DataSnapshot ds:dataSnapshot.getChildren())
-                    {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int i = 0;
+                if (dataSnapshot.getChildrenCount() != 0)
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         ++i;
-                        if(30>getDistanceFromLatLonInKm(cur_location.latitude,cur_location.longitude,
+                        if (30 > getDistanceFromLatLonInKm(cur_location.latitude, cur_location.longitude,
                                 Double.parseDouble(ds.child("lat").getValue().toString()),
                                 Double.parseDouble(ds.child("lng" +
-                                        "").getValue().toString())))
-                        {
-                            final Locations loctn=new Locations();
-                            loctn.loc=new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()),Double.parseDouble(ds.child("lng").getValue().toString()));
-                            loctn.num=Integer.parseInt(ds.child("id_no").getValue().toString());
-                            loctn.type=ds.child("type").getValue().toString();
-                            loctn.address=ds.child("address").getValue().toString();
-                            loctn.name=ds.child("name").getValue().toString();
-                            loctn.rating=Integer.parseInt(ds.child("rating").getValue().toString());
+                                        "").getValue().toString()))) {
+                            final Locations loctn = new Locations();
+                            loctn.loc = new LatLng(Double.parseDouble(ds.child("lat").getValue().toString()), Double.parseDouble(ds.child("lng").getValue().toString()));
+                            loctn.num = Integer.parseInt(ds.child("id_no").getValue().toString());
+                            loctn.type = ds.child("type").getValue().toString();
+                            loctn.address = ds.child("address").getValue().toString();
+                            loctn.name = ds.child("name").getValue().toString();
+                            loctn.rating = Integer.parseInt(ds.child("rating").getValue().toString());
                             locations.add(loctn);
-                            myRef.child("Comments").child(loctn.num+"").addValueEventListener(new ValueEventListener() {
+                            myRef.child("Comments").child(loctn.num + "").addValueEventListener(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(DataSnapshot dataSnapshot)
-                                {
-                                    if(dataSnapshot==null)
-                                        loctn.tot_comments=0;
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot == null)
+                                        loctn.tot_comments = 0;
                                     else
-                                        loctn.tot_comments=(int) dataSnapshot.getChildrenCount();
+                                        loctn.tot_comments = (int) dataSnapshot.getChildrenCount();
                                 }
+
                                 @Override
                                 public void onCancelled(DatabaseError error) {
                                     // Failed to read value
@@ -313,59 +292,57 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             });
                         }
                     }
-                    if(locations.size()==0) {
-                        ++dwnld_count;
-                        if(dwnld_count==2)
-                            loading.setVisibility(View.INVISIBLE);
-                        snackbar = Snackbar
-                                .make(findViewById(R.id.coordinatorlayout), "No service found nearby", Snackbar.LENGTH_INDEFINITE);
-                        snackbar.setActionTextColor(Color.RED);
+                if (locations.size() == 0) {
+                    ++dwnld_count;
+                    if (dwnld_count == 2)
+                        loading.setVisibility(View.INVISIBLE);
+                    snackbar = Snackbar
+                            .make(findViewById(R.id.coordinatorlayout), "No service found nearby", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setActionTextColor(Color.RED);
 
-                        View sbView = snackbar.getView();
+                    View sbView = snackbar.getView();
 
-                        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                        textView.setTextColor(Color.RED);
-                        textView.setGravity(Gravity.CENTER);
+                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(Color.RED);
+                    textView.setGravity(Gravity.CENTER);
 
-                        snackbar.show();
-                    }
-                    else
-                        setInstiMarker();
+                    snackbar.show();
+                } else
+                    setInstiMarker();
             }
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        // Failed to read value
-                        Log.w(TAG, "Failed to read value.", error.toException());
-                        Log.w(TAG, "Failed to read value.", error.toException());
-                    }
-                });
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
     }
-    double getDistanceFromLatLonInKm(double lat1,double lon1,double lat2,double lon2) {
-        double  R = 6371; // Radius of the earth in km
-        double  dLat = deg2rad(lat2-lat1);  // deg2rad below
-        double  dLon = deg2rad(lon2-lon1);
-        double  a =
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
+
+    double getDistanceFromLatLonInKm(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = deg2rad(lat2 - lat1);  // deg2rad below
+        double dLon = deg2rad(lon2 - lon1);
+        double a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                         Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                                Math.sin(dLon/2) * Math.sin(dLon/2);
-        double  c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double  d = R * c; // Distance in km
+                                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double d = R * c; // Distance in km
         return d;
     }
 
-    double  deg2rad(double deg)
-    {
-        return deg * (Math.PI/180);
+    double deg2rad(double deg) {
+        return deg * (Math.PI / 180);
     }
 
-    void setInstiMarker()
-    {
-        int i=0;
-        Log.d("location size= ",locations.size()+"");
+    void setInstiMarker() {
+        int i = 0;
+        Log.d("location size= ", locations.size() + "");
 
-        for(i=0;i<locations.size();++i)
-        {
-            Log.d("locations details  ",""+locations.get(i).loc);
+        for (i = 0; i < locations.size(); ++i) {
+            Log.d("locations details  ", "" + locations.get(i).loc);
             final View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.insti_marker, null);
             final ImageView rdp = (ImageView) mrker.findViewById(R.id.insti_dp);
             File localFile = null;
@@ -379,18 +356,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             final int finalI = i;
             final int finalI1 = i;
-            storageReference.child("display pictures/"+locations.get(i).type+".png").getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            storageReference.child("display pictures/" + locations.get(i).type + ".png").getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     Bitmap bitmap = BitmapFactory.decodeFile(finalLocalFile.getAbsolutePath());
                     rdp.setImageBitmap(bitmap);
                     LatLng ll = locations.get(finalI).loc;
-                    MarkerOptions options = new MarkerOptions().title(locations.get(finalI).type).snippet(finalI +"").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-                    mMarker=mMap.addMarker(options);
-                    if(finalI1 ==locations.size()-1)
-                    {
+                    MarkerOptions options = new MarkerOptions().title(locations.get(finalI).type).snippet(finalI + "").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
+                    mMarker = mMap.addMarker(options);
+                    if (finalI1 == locations.size() - 1) {
                         ++dwnld_count;
-                        if(dwnld_count==2)
+                        if (dwnld_count == 2)
                             loading.setVisibility(View.INVISIBLE);
                     }
                 }
@@ -402,23 +378,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         }
-        Log.d("firebase checking","Markers are the set");
+        Log.d("firebase checking", "Markers are the set");
 
     }
 
-       @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
-       void setMyMarker(final LatLng loc)
-       {
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
+    void setMyMarker(final LatLng loc) {
 
-           if(my_marker!=null)
-               my_marker.remove();
-           loading.setVisibility(View.VISIBLE);
-           SharedPreferences locpref= getSharedPreferences("UserDetails", MODE_PRIVATE);
-             new DownloadDp().execute();
-           if(flag==false)
-                changeCam(loc);
+        if (my_marker != null)
+            my_marker.remove();
+        loading.setVisibility(View.VISIBLE);
+        SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
+        new DownloadDp().execute();
+        if (flag == false)
+            changeCam(loc);
 
-       }
+    }
+
     public Bitmap createDrawableFromView(Context context, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -436,10 +412,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     ////////////////////    location listener
-    void locationListenSet()
-    {
+    void locationListenSet() {
         initializeLocationManager();
-        MapsActivity.LocationListener[] mLocationListeners = new MapsActivity.LocationListener[] {
+        MapsActivity.LocationListener[] mLocationListeners = new MapsActivity.LocationListener[]{
                 new MapsActivity.LocationListener(LocationManager.GPS_PROVIDER),
                 new MapsActivity.LocationListener(LocationManager.NETWORK_PROVIDER)
         };
@@ -470,61 +445,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
-    public class LocationListener implements android.location.LocationListener
-    {
-        public Location mLastLocation;
-        int i=0;
 
-        public LocationListener(String provider)
-        {
-            Log.e(TAG, "LocationListener " + provider);
-            mLastLocation = new Location(provider);
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location)
-        {
-            cur_location=new LatLng(location.getLatitude(),location.getLongitude());
-            if(mMap!=null)
-            {
-                setMyMarker(cur_location);
-                if(flag==false) {
-                    retrieveTheNearServices();
-                    progressBar.dismiss();
-                }
-            }
-            flag=true;
-        }
-
-        @Override
-        public void onProviderDisabled(String provider)
-        {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider)
-        {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
-        {
-            Log.e(TAG, "onStatusChanged: " + provider);
-        }
-
-
-    }
-
-    public void changeCam(LatLng ll)
-    {
-        CameraUpdate location= CameraUpdateFactory.newLatLngZoom(ll,15);
+    public void changeCam(LatLng ll) {
+        CameraUpdate location = CameraUpdateFactory.newLatLngZoom(ll, 15);
         mMap.animateCamera(location);
 
     }
-    private void bottomSheetSetup(){
+
+    private void bottomSheetSetup() {
         bottomSheet = findViewById(R.id.btm_sheet);
         mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
         mBottomSheetBehavior1.setPeekHeight(0);
@@ -539,7 +467,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     mBottomSheetBehavior1.setPeekHeight(0);
-                    bs_up=false;
+                    bs_up = false;
 
                     home_gps.setImageResource(R.drawable.gps_home);
                 }
@@ -552,6 +480,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    public class LocationListener implements android.location.LocationListener {
+        public Location mLastLocation;
+        int i = 0;
+
+        public LocationListener(String provider) {
+            Log.e(TAG, "LocationListener " + provider);
+            mLastLocation = new Location(provider);
+
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            cur_location = new LatLng(location.getLatitude(), location.getLongitude());
+            if (mMap != null) {
+                setMyMarker(cur_location);
+                if (flag == false) {
+                    retrieveTheNearServices();
+                    progressBar.dismiss();
+                }
+            }
+            flag = true;
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
+
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     private class DownloadDp extends AsyncTask<String, Void, Bitmap> {
@@ -576,16 +544,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // Set the bitmap into ImageView
             View mrker = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.marker, null);
             final CircleImageView rdp = (CircleImageView) mrker.findViewById(R.id.imageView1);
-            u_dp=rdp;
-            if(result!=null)
+            u_dp = rdp;
+            if (result != null)
                 u_dp.setImageBitmap(result);
             else
                 u_dp.setImageResource(R.drawable.defaultdp);
-            LatLng ll = new LatLng(cur_location.latitude,cur_location.longitude);
+            LatLng ll = new LatLng(cur_location.latitude, cur_location.longitude);
             MarkerOptions options = new MarkerOptions().title("ME").snippet("HAHA").position(ll).icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(MapsActivity.this, mrker)));
-            my_marker=mMap.addMarker(options);
+            my_marker = mMap.addMarker(options);
             ++dwnld_count;
-            if(dwnld_count==2)
-                loading.setVisibility(View.INVISIBLE);        }
+            if (dwnld_count == 2)
+                loading.setVisibility(View.INVISIBLE);
+        }
     }
 }
