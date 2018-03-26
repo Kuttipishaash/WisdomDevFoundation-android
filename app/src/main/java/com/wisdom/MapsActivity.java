@@ -389,7 +389,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             my_marker.remove();
         loading.setVisibility(View.VISIBLE);
         SharedPreferences locpref = getSharedPreferences("UserDetails", MODE_PRIVATE);
-        new DownloadDp().execute();
+        if(!dp_url.equals(""))
+            new DownloadDp().execute();
         if (flag == false)
             changeCam(loc);
 

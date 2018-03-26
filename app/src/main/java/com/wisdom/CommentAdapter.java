@@ -62,7 +62,8 @@ CommentAdapter(Context context, ArrayList<Locations.Comments> commnts)
         final CircleImageView c_dp=(CircleImageView)view.findViewById(R.id.comment_dp);
         comment.setSelected(true);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Glide.with(context).load(commnts.get(position).dp).into(c_dp);
+        if(!commnts.get(position).dp.equals(""))
+            Glide.with(context).load(commnts.get(position).dp).into(c_dp);
         name.setText(commnts.get(position).name);
         comment.setText(commnts.get(position).text);
         ImageView reactn=(ImageView)view.findViewById(R.id.reaction);
