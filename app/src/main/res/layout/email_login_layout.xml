@@ -2,29 +2,96 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/et_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/icon_black"
+        android:tint="@color/md_white_1000" />
 
-    <EditText
-        android:id="@+id/et_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/btn_submit_email_signin"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign In"
-        android:visibility="gone" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Sign in For Wisdom Services"
+        android:textAlignment="center"
+        android:textColor="@color/md_white_1000"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btn_submit_email_signup"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:visibility="gone" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="25dp"
+        android:paddingBottom="25dp"
+        android:text="Enter your email and password you want to use to sign in to your account"
+        android:textAlignment="center"
+        android:textColor="@color/md_white_1000"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:layout_marginLeft="10dp"
+                android:hint="E-Mail"
+                android:textColorHighlight="@color/md_white_1000"
+                android:textColorHint="@color/md_white_1000"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/md_white_1000" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:hint="Password"
+                android:textColorHint="@color/md_white_1000"
+                android:inputType="textPassword"
+                android:textColor="@color/md_white_1000"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_submit_email_signin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/rounded_button_light"
+            android:text="Sign In"
+            android:textColor="@color/md_white_1000"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_submit_email_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/rounded_button_light"
+            android:text="Sign Up"
+            android:textColor="@color/md_white_1000"
+            android:visibility="gone" />
+    </LinearLayout>
 </LinearLayout>

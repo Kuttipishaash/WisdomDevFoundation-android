@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#22313F</color>
     <color name="colorAccent">#B9BEC2</color>
     <color name="buttonColor">#22313F</color>
+    <color name="buttonColorLight">#507495</color>
 
     <!--reds-->
     <color name="md_red_50">#FFEBEE</color>
