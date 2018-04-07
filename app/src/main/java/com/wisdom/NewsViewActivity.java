@@ -24,13 +24,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 public class NewsViewActivity extends AppCompatActivity {
 
     TextView mArticleContent;
+    TextView mArticleHead;
     CollapsingToolbarLayout mToolbarLayout;
 
     String articleHeading;
     String articleLink;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +44,21 @@ public class NewsViewActivity extends AppCompatActivity {
         //Initialize views
         mToolbarLayout = findViewById(R.id.toolbar_layout_view_news);
         mArticleContent = findViewById(R.id.text_article_content);
+        mArticleHead = findViewById(R.id.text_headline);
 
         //Get heading, article link and content from the calling intent
         articleHeading = getIntent().getStringExtra("articleHeading");
         articleLink = getIntent().getStringExtra("articleLink");
         mArticleContent.setText(getIntent().getStringExtra("articleContent"));
+        mArticleHead.setText(articleHeading);
+
+
 
         //Initialize toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_view_news);
         toolbar.setTitle(articleHeading);
+
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -67,6 +77,7 @@ public class NewsViewActivity extends AppCompatActivity {
                 Glide
                         .with(getApplicationContext())
                         .load(response.body().getGuid().getRendered())
+                        .transition(withCrossFade())
                         .apply(new RequestOptions()
                                 .centerCrop()
                         )

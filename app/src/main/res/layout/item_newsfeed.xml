@@ -28,7 +28,7 @@
             android:ellipsize="end"
             android:text="Heading"
             android:textColor="@color/colorPrimary"
-            android:textSize="19sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -132,7 +132,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginRight="5dp"
-                android:src="@drawable/ic_share_white_24dp"
+                android:src="@drawable/ic_share_black_24dp"
                 android:textColor="@color/colorPrimary"
                 android:tint="@color/md_grey_500" />
 

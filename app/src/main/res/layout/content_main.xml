@@ -11,21 +11,20 @@
     tools:context=".NewsFeedActivity"
     tools:showIn="@layout/app_bar_main">
     <!--TODO: Swipe to gesture - Future Implmentaion-->
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/list_feed"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:divider="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ListView
+            android:id="@+id/list_feed"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:divider="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -38,74 +37,76 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<android.support.design.widget.FloatingActionButton-->
-    <!--android:id="@+id/fab"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:src="@drawable/ic_pin_drop_white_24dp"-->
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--android:gravity="bottom|end"-->
-    <!--android:backgroundTint="@color/colorPrimaryDark"-->
-    <!--app:elevation="6dp"-->
-    <!--android:layout_margin="15dp"-->
-    <!--app:pressedTranslationZ="12dp"/>-->
-
-    <com.github.clans.fab.FloatingActionMenu
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="11dp"
-        android:layout_marginLeft="11dp"
-        android:layout_marginRight="11dp"
+        android:layout_margin="15dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:gravity="bottom|end"
+        android:src="@drawable/ic_pin_drop_black_24dp"
+        app:elevation="6dp"
+        app:fab_size="normal"
+        android:tint="@color/md_white_1000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        fab:menu_animationDelayPerItem="55"
-        fab:menu_backgroundColor="@android:color/transparent"
-        fab:menu_buttonSpacing="0dp"
-        fab:menu_colorNormal="@color/colorPrimaryDark"
-        fab:menu_colorPressed="#0d1319"
-        fab:menu_colorRipple="@color/colorPrimaryDark"
-        fab:menu_fab_size="normal"
-        fab:menu_icon="@drawable/ic_pin_drop_white_24dp "
-        fab:menu_labels_colorNormal="#333"
-        fab:menu_labels_colorPressed="#444"
-        fab:menu_labels_colorRipple="@color/colorPrimaryDark"
-        fab:menu_labels_cornerRadius="3dp"
-        fab:menu_labels_ellipsize="none"
-        fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
-        fab:menu_labels_margin="0dp"
-        fab:menu_labels_maxLines="-1"
-        fab:menu_labels_padding="8dp"
-        fab:menu_labels_position="left"
-        fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
-        fab:menu_labels_showShadow="true"
-        fab:menu_labels_singleLine="false"
-        fab:menu_labels_textColor="#f2f1f1"
-        fab:menu_labels_textSize="15sp"
-        fab:menu_openDirection="up">
+        app:pressedTranslationZ="12dp" />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_maps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_pin_drop_white_24dp"
-            fab:fab_label="Locate Services"
-            app:fab_colorNormal="@color/colorPrimary"
-            app:fab_colorPressed="#0d1319"
-            fab:fab_size="mini"/>
+    <!--<com.github.clans.fab.FloatingActionMenu-->
+    <!--android:id="@+id/fab"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="11dp"-->
+    <!--android:layout_marginLeft="11dp"-->
+    <!--android:layout_marginRight="11dp"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--fab:menu_animationDelayPerItem="55"-->
+    <!--fab:menu_backgroundColor="@android:color/transparent"-->
+    <!--fab:menu_buttonSpacing="0dp"-->
+    <!--fab:menu_colorNormal="@color/colorPrimaryDark"-->
+    <!--fab:menu_colorPressed="#0d1319"-->
+    <!--fab:menu_colorRipple="@color/colorPrimaryDark"-->
+    <!--fab:menu_fab_size="normal"-->
+    <!--fab:menu_icon="@drawable/ic_pin_drop_white_24dp "-->
+    <!--fab:menu_labels_colorNormal="#333"-->
+    <!--fab:menu_labels_colorPressed="#444"-->
+    <!--fab:menu_labels_colorRipple="@color/colorPrimaryDark"-->
+    <!--fab:menu_labels_cornerRadius="3dp"-->
+    <!--fab:menu_labels_ellipsize="none"-->
+    <!--fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"-->
+    <!--fab:menu_labels_margin="0dp"-->
+    <!--fab:menu_labels_maxLines="-1"-->
+    <!--fab:menu_labels_padding="8dp"-->
+    <!--fab:menu_labels_position="left"-->
+    <!--fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"-->
+    <!--fab:menu_labels_showShadow="true"-->
+    <!--fab:menu_labels_singleLine="false"-->
+    <!--fab:menu_labels_textColor="#f2f1f1"-->
+    <!--fab:menu_labels_textSize="15sp"-->
+    <!--fab:menu_openDirection="up">-->
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_emg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_ambulance_white_24dp"
-            app:fab_colorNormal="@color/colorPrimary"
-            app:fab_colorPressed="#0d1319"
-            fab:fab_label="Emergency Services"
-            fab:fab_size="mini" />
+    <!--<com.github.clans.fab.FloatingActionButton-->
+    <!--android:id="@+id/fab_maps"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:src="@drawable/ic_pin_drop_white_24dp"-->
+    <!--fab:fab_label="Locate Services"-->
+    <!--app:fab_colorNormal="@color/colorPrimary"-->
+    <!--app:fab_colorPressed="#0d1319"-->
+    <!--fab:fab_size="mini"/>-->
 
-    </com.github.clans.fab.FloatingActionMenu>
+    <!--<com.github.clans.fab.FloatingActionButton-->
+    <!--android:id="@+id/fab_emg"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:src="@drawable/ic_ambulance_white_24dp"-->
+    <!--app:fab_colorNormal="@color/colorPrimary"-->
+    <!--app:fab_colorPressed="#0d1319"-->
+    <!--fab:fab_label="Emergency Services"-->
+    <!--fab:fab_size="mini" />-->
+
+    <!--</com.github.clans.fab.FloatingActionMenu>-->
 
 
 </android.support.constraint.ConstraintLayout>

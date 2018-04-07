@@ -7,8 +7,7 @@
     android:orientation="vertical">
 
 
-
-    <android.support.v4.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/about_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -24,8 +23,9 @@
                 android:id="@+id/about_logo"
                 android:layout_width="250dp"
                 android:layout_height="190dp"
+                android:contentDescription="Wisdom About Logo"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/wisdom_about" />
+                android:src="@drawable/wisdom_header" />
 
             <TextView
                 android:id="@+id/text_about_version"
@@ -34,8 +34,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:padding="2dp"
-                android:textColor="@color/md_white_1000"
                 android:text="© 2018 Wisdom Development Foundation"
+                android:textColor="@color/md_white_1000"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -51,8 +51,8 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="13dp"
                     android:padding="5dp"
-                    android:textColor="@color/md_white_1000"
                     android:text="E-Mail:"
+                    android:textColor="@color/md_white_1000"
                     android:textStyle="bold" />
 
                 <TextView
@@ -60,8 +60,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:autoLink="email"
-                    android:textColor="@color/md_white_1000"
-                    android:text="info@wisdomintiatives.org" />
+                    android:text="info@wisdomintiatives.org"
+                    android:textColor="@color/md_white_1000" />
 
             </LinearLayout>
 
@@ -77,18 +77,19 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="14dp"
                     android:padding="5dp"
-                    android:textColor="@color/md_white_1000"
                     android:text="Contact:"
+                    android:textColor="@color/md_white_1000"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:autoLink="phone"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@color/md_white_1000"
-                    android:text="+91 952691 0507" />
+                    android:autoLink="phone"
+                    android:text="+91 952691 0507"
+                    android:textColor="@color/md_white_1000" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/linear_layout_about_webpage"
                 android:layout_width="match_parent"
@@ -101,17 +102,17 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="14dp"
                     android:padding="5dp"
-                    android:textColor="@color/md_white_1000"
                     android:text="Website:"
+                    android:textColor="@color/md_white_1000"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:autoLink="web"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@color/md_white_1000"
-                    android:text="wisdominitiatives.org" />
+                    android:autoLink="web"
+                    android:text="wisdominitiatives.org"
+                    android:textColor="@color/md_white_1000" />
             </LinearLayout>
 
 
@@ -134,10 +135,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="35dp"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@color/md_white_1000"
-                    android:text="WISDOM DEVELOPMENT FOUNDATION is based in Kochi working for the development of the society in grass root level. " />
+                    android:layout_marginHorizontal="35dp"
+                    android:text="WISDOM DEVELOPMENT FOUNDATION is based in Kochi working for the development of the society in grass root level. "
+                    android:textColor="@color/md_white_1000" />
             </LinearLayout>
 
             <TextView
@@ -146,19 +147,20 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="14dp"
                 android:padding="5dp"
-                android:textColor="@color/md_white_1000"
                 android:text="An App Developed by:"
+                android:textColor="@color/md_white_1000"
                 android:textStyle="bold" />
+
             <TextView
-                android:layout_marginTop="1dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@color/md_white_1000"
-                android:text="Prejith, Prabhashankar, Mebin &amp; Pranav"/>
+                android:layout_marginTop="1dp"
+                android:text="Prejith, Prabhashankar, Mebin &amp; Pranav"
+                android:textColor="@color/md_white_1000" />
         </LinearLayout>
 
 
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
 </LinearLayout>

@@ -41,4 +41,9 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
+    <style name="ToolBarTheme">
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>
