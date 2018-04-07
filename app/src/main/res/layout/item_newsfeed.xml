@@ -11,61 +11,55 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="280dp"
-            android:layout_height="107dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Headline"
-                android:textColor="@color/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/text_excerpt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="2dp"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:maxLength="100"
-                android:maxLines="2"
-                android:text="Download URL"
-                android:textColor="@color/md_black_1000" />
+        android:layout_marginTop="8dp">
 
 
-        </LinearLayout>
+        <TextView
+            android:id="@+id/text_headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/img_thumb"
+            android:ellipsize="end"
+            android:text="Heading"
+            android:textColor="@color/colorPrimary"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_excerpt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/text_headline"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_toLeftOf="@+id/img_thumb"
+            android:maxLength="150"
+            android:maxLines="2"
+            android:text="@string/large_text"
+            android:textColor="@color/md_black_1000" />
 
         <ImageView
             android:id="@+id/img_thumb"
             android:layout_width="105dp"
             android:layout_height="105dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="8dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="5dp"
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.75dp"
-       android:layout_marginBottom="0dp"
         android:layout_gravity="center"
+        android:layout_marginBottom="0dp"
         android:layout_marginTop="10dp"
         android:background="@color/md_grey_200" />
 
@@ -129,9 +123,9 @@
             android:id="@+id/btn_img_share"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginRight="30dp"
             android:layout_marginTop="5dp"
-            android:layout_gravity="center_vertical"
             android:gravity="center_vertical">
 
             <ImageView
@@ -145,8 +139,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_gravity="center_vertical"
+                android:gravity="center"
                 android:text="Share"
                 android:textAllCaps="true"
                 android:textColor="@color/md_grey_500" />
